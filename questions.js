@@ -140,7 +140,7 @@ const QUESTIONS = [
     "answer": "run into",
     "prefix": "We've ",
     "suffix": " an issue with the timeline.",
-    "meaning": "문제를 마주치다",
+    "meaning": "마주치다",
     "translation": "일정과 관련해 문제가 생겼어요.",
     "day": 8,
     "addedDate": "2026-02-16"
@@ -239,7 +239,7 @@ const QUESTIONS = [
     "answer": "would you",
     "prefix": "",
     "suffix": " mind reviewing the attached document?",
-    "meaning": "(외부) 검토 부탁드립니다",
+    "meaning": "(외부) ~ 부탁드립니다",
     "translation": "첨부한 문서 검토해 주실 수 있을까요?",
     "day": 11,
     "addedDate": "2026-02-19"
@@ -248,7 +248,7 @@ const QUESTIONS = [
     "answer": "I'd appreciate",
     "prefix": "",
     "suffix": " it if we could schedule a brief call.",
-    "meaning": "(외부) ~해주시면 감사드리겠습니다.",
+    "meaning": "(외부) ~면 감사드리겠습니다.",
     "translation": "간단한 통화를 위해 일정을 잡아주시면 감사드리겠습니다.",
     "day": 11,
     "addedDate": "2026-02-19"
@@ -440,8 +440,7 @@ const QUESTIONS = [
     "meaning": "[팀/회사]의 [이름]입니다 (콜 시작 소개)",
     "translation": "안녕하세요, 전략팀 민지입니다.",
     "day": 22,
-    "addedDate": "2026-03-02",
-    "visible": false
+    "addedDate": "2026-03-02"
   },
   {
     "answer": "quick call",
