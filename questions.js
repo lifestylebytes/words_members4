@@ -297,5 +297,329 @@ const QUESTIONS = [
     "translation": "핵심 포인트를 차근차근 설명드릴게요.",
     "day": 12,
     "addedDate": "2026-02-20"
+  },
+  {
+    "answer": "on my radar",
+    "prefix": "It’s ",
+    "suffix": ". I’ll take a look after this meeting.",
+    "meaning": "이미 인지했고, 확인/처리할 항목으로 올려둔 상태",
+    "translation": "이미 확인 리스트에 올려뒀어요. 이 미팅 끝나고 확인해볼게요.",
+    "day": 15,
+    "addedDate": "2026-02-25"
+  },
+  {
+    "answer": "Noted",
+    "prefix": "",
+    "suffix": ", thanks. I’ll adjust the timeline.",
+    "meaning": "확인했고 기억(기록)해둘게요",
+    "translation": "확인했어요. 감사합니다. 일정 조정해둘게요.",
+    "day": 15,
+    "addedDate": "2026-02-25"
+  },
+  {
+    "answer": "Copy that",
+    "prefix": "",
+    "suffix": ". I’ll send a draft by 5.",
+    "meaning": "확인했어요. 알겠어요.",
+    "translation": "확인했어요. 5시까지 초안 보내드릴게요.",
+    "day": 15,
+    "addedDate": "2026-02-25"
+  },
+  {
+    "answer": "take the lead",
+    "prefix": "I can ",
+    "suffix": " for today’s meeting.",
+    "meaning": "(회의/업무) 진행을 맡다",
+    "translation": "오늘 미팅은 제가 진행할게요.",
+    "day": 16,
+    "addedDate": "2026-02-26"
+  },
+  {
+    "answer": "reconvene",
+    "prefix": "Let’s ",
+    "suffix": " in 10 minutes.",
+    "meaning": "다시 모이다 / 회의를 재개하다",
+    "translation": "10분 후에 다시 모이죠.",
+    "day": 16,
+    "addedDate": "2026-02-26"
+  },
+  {
+    "answer": "You’re cutting off",
+    "prefix": "",
+    "suffix": " a bit. Could you say that again?",
+    "meaning": "(상대) 목소리가 끊겨요 / 잘 안 들려요",
+    "translation": "목소리가 조금 끊겨요. 다시 한 번 말씀해주실 수 있을까요?",
+    "day": 16,
+    "addedDate": "2026-02-26"
+  },
+  {
+    "answer": "That’s how the cookie crumbles",
+    "prefix": "The meeting got rescheduled again. Well, ",
+    "suffix": ".",
+    "meaning": "어쩔 수 없는 일이다, 그런 거지 뭐",
+    "translation": "회의 일정이 또 바뀌었네요. 뭐, 어쩔 수 없죠.",
+    "day": 17,
+    "addedDate": "2026-02-27"
+  },
+  {
+    "answer": "air quality",
+    "prefix": "The ",
+    "suffix": " is pretty bad today.",
+    "meaning": "공기질",
+    "translation": "오늘 공기질이 꽤 안 좋네요.",
+    "day": 17,
+    "addedDate": "2026-02-27"
+  },
+  {
+    "answer": "social battery",
+    "prefix": "My ",
+    "suffix": " is low today. I need a bit of recharge.",
+    "meaning": "사회적 배터리, 사람 만나며 쓰는 에너지",
+    "translation": "오늘은 사회적 배터리가 좀 부족해서, 잠깐 충전이 필요해요.",
+    "day": 17,
+    "addedDate": "2026-02-27"
+  },
+  {
+    "answer": "proactivity",
+    "prefix": "My ",
+    "suffix": " helped us avoid delays.",
+    "meaning": "선제 대응, 문제가 생기기 전에 미리 움직임",
+    "translation": "제가 미리 대응한 덕분에 지연을 피할 수 있었어요.",
+    "day": 18,
+    "addedDate": "2026-03-02"
+  },
+  {
+    "answer": "ownership",
+    "prefix": "I took ",
+    "suffix": " of the project and delivered on time.",
+    "meaning": "오너십, 끝까지 책임지고 마무리하는 태도",
+    "translation": "프로젝트를 책임지고 제때 결과물을 냈어요.",
+    "day": 18,
+    "addedDate": "2026-03-02"
+  },
+  {
+    "answer": "initiative",
+    "prefix": "I showed ",
+    "suffix": " by proposing a simpler process.",
+    "meaning": "주도성, 스스로 일을 찾아서 움직이는 힘",
+    "translation": "더 단순한 프로세스를 제안하면서 주도성을 보여줬어요.",
+    "day": 18,
+    "addedDate": "2026-03-02"
+  },
+  {
+    "answer": "by EOD",
+    "prefix": "I’ll send the updated deck ",
+    "suffix": ".",
+    "meaning": "오늘 퇴근 전까지 (End Of Day)",
+    "translation": "오늘 퇴근 전까지 업데이트된 자료를 보내드릴게요.",
+    "day": 19,
+    "addedDate": "2026-03-03"
+  },
+  {
+    "answer": "hard stop",
+    "prefix": "I have a ",
+    "suffix": " at 4, so can we wrap up by then?",
+    "meaning": "(회의/업무) 무조건 끝내야 하는 시간",
+    "translation": "4시에 다른 일정이 있어서 꼭 끝내야 해요. 그때까지 마무리할 수 있을까요?",
+    "day": 19,
+    "addedDate": "2026-03-03"
+  },
+  {
+    "answer": "behind schedule",
+    "prefix": "We’re a bit ",
+    "suffix": ", but we can share a revised ETA tomorrow.",
+    "meaning": "일정이 밀리고 있다",
+    "translation": "일정이 조금 밀렸지만, 내일 수정된 ETA를 공유드릴게요.",
+    "day": 19,
+    "addedDate": "2026-03-03"
+  },
+  {
+    "answer": "This is, from",
+    "prefix": "",
+    "suffix": "Hi, this is Minji from the Strategy team.",
+    "meaning": "[팀/회사]의 [이름]입니다 (콜 시작 소개)",
+    "translation": "안녕하세요, 전략팀 민지입니다.",
+    "day": 22,
+    "addedDate": "2026-03-06"
+  },
+  {
+    "answer": "quick call",
+    "prefix": "Do you have a minute for a ",
+    "suffix": "?",
+    "meaning": "짧게 통화(잠깐 콜)",
+    "translation": "잠깐만 통화 가능하실까요?",
+    "day": 22,
+    "addedDate": "2026-03-06"
+  },
+  {
+    "answer": "Is now a good time?",
+    "prefix": "",
+    "suffix": "Is now a good time to talk for 2 minutes?",
+    "meaning": "지금 통화 괜찮으세요?",
+    "translation": "지금 2분 정도 통화 괜찮으실까요?",
+    "day": 22,
+    "addedDate": "2026-03-06"
+  },
+  {
+    "answer": "scope creep",
+    "prefix": "This feels like ",
+    "suffix": ". Can we align on what’s in scope?",
+    "meaning": "(슬쩍슬쩍) 요구사항이 늘어나는 것",
+    "translation": "요구사항이 계속 늘어나는 것 같아요. 범위를 다시 맞춰볼까요?",
+    "day": 23,
+    "addedDate": "2026-03-09"
+  },
+  {
+    "answer": "shake things up",
+    "prefix": "We need to ",
+    "suffix": " and try a simpler workflow.",
+    "meaning": "변화를 주다, 판을 좀 바꾸다",
+    "translation": "변화를 주고 더 단순한 워크플로우를 시도해봐야겠어요.",
+    "day": 23,
+    "addedDate": "2026-03-09"
+  },
+  {
+    "answer": "raise the bar",
+    "prefix": "Let’s ",
+    "suffix": " for this deliverable.",
+    "meaning": "기준을 올리다, 더 높은 수준을 만들다",
+    "translation": "이 결과물은 기준을 좀 더 높여봅시다.",
+    "day": 23,
+    "addedDate": "2026-03-09"
+  },
+  {
+    "answer": "year-end tax adjustment",
+    "prefix": "How do we handle ",
+    "suffix": "?",
+    "meaning": "연말정산",
+    "translation": "저희는 연말정산을 어떻게 처리하나요?",
+    "day": 24,
+    "addedDate": "2026-03-10"
+  },
+  {
+    "answer": "severance pay",
+    "prefix": "How does ",
+    "suffix": " work in Korea?",
+    "meaning": "퇴직금",
+    "translation": "한국에서 퇴직금은 어떻게 적용되나요?",
+    "day": 24,
+    "addedDate": "2026-03-10"
+  },
+  {
+    "answer": "stock options",
+    "prefix": "Just to confirm, do we offer ",
+    "suffix": "?",
+    "meaning": "스톡옵션(주식 보상)",
+    "translation": "확인차 여쭤보는데, 저희 회사에서 스톡옵션을 제공하나요?",
+    "day": 24,
+    "addedDate": "2026-03-10"
+  },
+  {
+    "answer": "to confirm",
+    "prefix": "",
+    "suffix": ", we’re shipping on Friday, right?",
+    "meaning": "확인하자면",
+    "translation": "확인차 말씀드리면, 금요일에 릴리즈 맞죠?",
+    "day": 25,
+    "addedDate": "2026-03-11"
+  },
+  {
+    "answer": "deliverables",
+    "prefix": "What are the ",
+    "suffix": " for this milestone?",
+    "meaning": "산출물, 결과물(내가 실제로 제출할 것)",
+    "translation": "이번 마일스톤의 산출물은 무엇인가요?",
+    "day": 25,
+    "addedDate": "2026-03-11"
+  },
+  {
+    "answer": "clarify",
+    "prefix": "Just to ",
+    "suffix": ", do you need this today?",
+    "meaning": "명확히 하다, 정리해서 확인하다",
+    "translation": "확인차 여쭤보는데, 이거 오늘 필요하신가요?",
+    "day": 25,
+    "addedDate": "2026-03-11"
+  },
+  {
+    "answer": "sign off",
+    "prefix": "Can you ",
+    "suffix": " on this by EOD?",
+    "meaning": "(최종) 승인/사인오프 하다",
+    "translation": "오늘 중으로 이거 승인해 주실 수 있나요?",
+    "day": 26,
+    "addedDate": "2026-03-12"
+  },
+  {
+    "answer": "No further changes needed.",
+    "prefix": "",
+    "suffix": " Please proceed.",
+    "meaning": "추가 수정 없이 이대로 확정해도 돼요",
+    "translation": "더 이상의 수정은 필요 없습니다. 진행해 주세요.",
+    "day": 26,
+    "addedDate": "2026-03-12"
+  },
+  {
+    "answer": "iterate",
+    "prefix": "Let’s ",
+    "suffix": " based on this feedback and share v2.",
+    "meaning": "한 번 더 개선해서 다음 버전으로 가다",
+    "translation": "이 피드백을 바탕으로 수정해서 v2를 공유하겠습니다.",
+    "day": 26,
+    "addedDate": "2026-03-12"
+  },
+  {
+    "answer": "context",
+    "prefix": "For ",
+    "suffix": ", the client asked for changes yesterday.",
+    "meaning": "맥락, 배경 정보",
+    "translation": "맥락을 말씀드리면, 클라이언트가 어제 변경을 요청했어요.",
+    "day": 28,
+    "addedDate": "2026-03-16"
+  },
+  {
+    "answer": "handoff notes",
+    "prefix": "I’ll share the ",
+    "suffix": " by EOD.",
+    "meaning": "인계 노트, 인수인계를 위한 정리 문서",
+    "translation": "오늘 퇴근 전까지 인계 노트를 공유할게요.",
+    "day": 28,
+    "addedDate": "2026-03-16"
+  },
+  {
+    "answer": "open items",
+    "prefix": "Here are the ",
+    "suffix": " we still need to address.",
+    "meaning": "미해결 항목, 아직 남아 있는 할 일",
+    "translation": "아직 처리해야 하는 미해결 항목은 다음과 같습니다.",
+    "day": 28,
+    "addedDate": "2026-03-16"
+  },
+  {
+    "answer": "in your next role",
+    "prefix": "I wish you all the best ",
+    "suffix": ".",
+    "meaning": "다음 역할/새 직장에서",
+    "translation": "새 직무에서도 모든 일이 잘 되길 바랍니다.",
+    "day": 29,
+    "addedDate": "2026-03-17"
+  },
+  {
+    "answer": "continued success",
+    "prefix": "Wishing you ",
+    "suffix": ".",
+    "meaning": "앞으로도 계속 잘 되길 바랍니다 (커리어/성과 톤)",
+    "translation": "앞으로도 계속 좋은 성과가 있길 바랍니다.",
+    "day": 29,
+    "addedDate": "2026-03-17"
+  },
+  {
+    "answer": "best wishes",
+    "prefix": "",
+    "suffix": " for your future endeavors.",
+    "meaning": "좋은 일만 있길 바라요 (포멀한 축복)",
+    "translation": "앞으로의 모든 여정에 좋은 일만 있길 바랍니다.",
+    "day": 29,
+    "addedDate": "2026-03-17"
   }
 ];
