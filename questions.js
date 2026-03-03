@@ -257,7 +257,7 @@ const QUESTIONS = [
     "answer": "look into",
     "prefix": "I'll ",
     "suffix": " it and share an update.",
-    "meaning": "(내부) 확인해보다, 알아보다",
+    "meaning": "(내부) (들여다 보다) 확인해보다, 알아보다",
     "translation": "제가 확인해보고 업데이트 공유할게요.",
     "day": 11,
     "addedDate": "2026-02-19"
@@ -266,7 +266,7 @@ const QUESTIONS = [
     "answer": "change in the timeline",
     "prefix": "I wanted to inform you that there's been a slight ",
     "suffix": ".",
-    "meaning": "(외부) 변경 사항이 있다",
+    "meaning": "(외부) 타임라인 변경 사항이 있다",
     "translation": "일정에 약간의 변경 사항이 있음을 알려드리고자 합니다.",
     "day": 11,
     "addedDate": "2026-02-19"
@@ -455,7 +455,7 @@ const QUESTIONS = [
     "answer": "Is now a good time?",
     "prefix": "",
     "suffix": "Is now a good time to talk for 2 minutes?",
-    "meaning": "지금 통화 괜찮으세요?",
+    "meaning": "지금 괜찮은 시간일까요? (통화나 캐치업 하기 전에)",
     "translation": "지금 2분 정도 통화 괜찮으실까요?",
     "day": 22,
     "addedDate": "2026-03-02"
@@ -574,8 +574,8 @@ const QUESTIONS = [
     "suffix": ", the client asked for changes yesterday.",
     "meaning": "맥락, 배경 정보",
     "translation": "맥락을 말씀드리면, 클라이언트가 어제 변경을 요청했어요.",
-    "day": 28,
-    "addedDate": "2026-03-08"
+    "day": 29,
+    "addedDate": "2026-03-09"
   },
   {
     "answer": "handoff notes",
@@ -583,8 +583,8 @@ const QUESTIONS = [
     "suffix": " by EOD.",
     "meaning": "인계 노트, 인수인계를 위한 정리 문서",
     "translation": "오늘 퇴근 전까지 인계 노트를 공유할게요.",
-    "day": 28,
-    "addedDate": "2026-03-08"
+    "day": 29,
+    "addedDate": "2026-03-09"
   },
   {
     "answer": "open items",
@@ -592,8 +592,8 @@ const QUESTIONS = [
     "suffix": " we still need to address.",
     "meaning": "미해결 항목, 아직 남아 있는 할 일",
     "translation": "아직 처리해야 하는 미해결 항목은 다음과 같습니다.",
-    "day": 28,
-    "addedDate": "2026-03-08"
+    "day": 29,
+    "addedDate": "2026-03-09"
   },
   {
     "answer": "in your next role",
@@ -601,8 +601,8 @@ const QUESTIONS = [
     "suffix": ".",
     "meaning": "다음 역할/새 직장에서",
     "translation": "새 직무에서도 모든 일이 잘 되길 바랍니다.",
-    "day": 29,
-    "addedDate": "2026-03-09"
+    "day": 30,
+    "addedDate": "2026-03-10"
   },
   {
     "answer": "continued success",
@@ -610,8 +610,8 @@ const QUESTIONS = [
     "suffix": ".",
     "meaning": "앞으로도 계속 잘 되길 바랍니다 (커리어/성과 톤)",
     "translation": "앞으로도 계속 좋은 성과가 있길 바랍니다.",
-    "day": 29,
-    "addedDate": "2026-03-09"
+    "day": 30,
+    "addedDate": "2026-03-10"
   },
   {
     "answer": "best wishes",
@@ -619,7 +619,7 @@ const QUESTIONS = [
     "suffix": " for your future endeavors.",
     "meaning": "좋은 일만 있길 바라요 (포멀한 축복)",
     "translation": "앞으로의 모든 여정에 좋은 일만 있길 바랍니다.",
-    "day": 29,
-    "addedDate": "2026-03-09"
+    "day": 30,
+    "addedDate": "2026-03-10"
   }
 ];
