@@ -37,6 +37,8 @@ const progressEl = document.getElementById("progress");
 const scoreEl = document.getElementById("score");
 const skipBtn = document.getElementById("skipBtn");
 const resetBtn = document.getElementById("resetBtn");
+const batch10Btn = document.getElementById("batch10Btn");
+const batch20Btn = document.getElementById("batch20Btn");
 const mobileInput = document.getElementById("mobileInput");
 const finalLinkWrap = document.getElementById("finalLinkWrap");
 
@@ -45,6 +47,7 @@ let questions = [];
 let currentIndex = 0;
 let correctCount = 0;
 let wrongCount = 0;
+let currentSessionLimit = 10;
 
 // 한 글자 박스 정보
 let slots = [];      // [{ isSpace: true/false }]
@@ -64,13 +67,33 @@ function shuffle(array) {
   }
 }
 
-// 세션용 문제 10개 (질문이 10개 미만이면 전체 사용)
+// 세션용 문제 (기본 10개, 질문이 부족하면 전체 사용)
 // visible !== false인 항목만 사용
 function pickSessionQuestions(limit = 10) {
   const copy = [...PLAYABLE_QUESTIONS];
   shuffle(copy);
   const realLimit = Math.min(limit, copy.length);
   return copy.slice(0, realLimit);
+}
+
+function updateScore() {
+  if (!scoreEl) return;
+  if (!questions.length) {
+    scoreEl.textContent = "";
+    return;
+  }
+  scoreEl.textContent = `Score (${currentSessionLimit}문제): ${correctCount}/${currentSessionLimit}`;
+}
+
+function updateBatchSelectorUI() {
+  if (batch10Btn) {
+    batch10Btn.classList.toggle("selected", currentSessionLimit === 10);
+    batch10Btn.setAttribute("aria-pressed", currentSessionLimit === 10 ? "true" : "false");
+  }
+  if (batch20Btn) {
+    batch20Btn.classList.toggle("selected", currentSessionLimit === 20);
+    batch20Btn.setAttribute("aria-pressed", currentSessionLimit === 20 ? "true" : "false");
+  }
 }
 
 // 문자열 정규화 기본
@@ -265,7 +288,7 @@ function setSentence(q) {
   statusEl.className = "status";
 
   progressEl.textContent = `Q ${currentIndex + 1} / ${questions.length}`;
-  scoreEl.textContent = `Score: ${correctCount}`;
+  updateScore();
 
   progressEl.textContent =
     `오늘까지 공개된 단어 ${AVAILABLE_QUESTIONS.length}개 중 Q ${currentIndex + 1}`;
@@ -346,7 +369,7 @@ function checkAnswer() {
     statusEl.textContent = "굳, 맞았습니다. 다음 문장으로 넘어갈게요.";
     statusEl.className = "status correct";
     card.classList.add("flash");
-    scoreEl.textContent = `Score: ${correctCount}`;
+    updateScore();
     finished = true;
 
     setTimeout(() => {
@@ -418,8 +441,11 @@ function focusMobileInput() {
 
 // -------------------- Reset --------------------
 
-function resetAll() {
-  questions = pickSessionQuestions(10);
+// resetAll now accepts a limit for number of questions (default 10)
+function resetAll(limit = 10) {
+  currentSessionLimit = limit;
+  updateBatchSelectorUI();
+  questions = pickSessionQuestions(limit);
 
 
   if (questions.length === 0) {
@@ -429,7 +455,7 @@ function resetAll() {
     slotsContainer.innerHTML = "";
     progressEl.textContent = "";
     statusEl.textContent = "";
-    scoreEl.textContent = "";
+    updateScore();
     return;
   }
 
@@ -444,7 +470,7 @@ function resetAll() {
 
   statusEl.textContent = "";
   statusEl.className = "status";
-  scoreEl.textContent = "Score: 0";
+  updateScore();
 
   if (!questions.length) {
     prefixEl.textContent = "";
@@ -575,7 +601,13 @@ if (mobileInput) {
 
 document.addEventListener("keydown", handleKey);
 skipBtn.addEventListener("click", revealAndNext);
-resetBtn.addEventListener("click", resetAll);
+resetBtn.addEventListener("click", () => resetAll(currentSessionLimit));
+if (batch10Btn) {
+  batch10Btn.addEventListener("click", () => resetAll(10));
+}
+if (batch20Btn) {
+  batch20Btn.addEventListener("click", () => resetAll(20));
+}
 
 card.addEventListener("click", focusMobileInput);
 card.addEventListener("touchstart", focusMobileInput);
@@ -583,7 +615,7 @@ card.addEventListener("touchstart", focusMobileInput);
 // 팝업 다시하기 버튼 (단 한 번만 등록)
 document.getElementById("retryBtn").addEventListener("click", () => {
   document.getElementById("resultModal").classList.add("hidden");
-  resetAll();
+  resetAll(currentSessionLimit);
 });
 
 // 시작

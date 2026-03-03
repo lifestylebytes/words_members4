@@ -45,6 +45,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
 }
 
 .left-header {
@@ -81,8 +83,8 @@ body {
   border-radius: 999px;
   background: #f4f2ff;
   box-shadow:
-    inset 2px 2px 4px rgba(196, 191, 225, 0.8),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.95);
+    8px 8px 18px rgba(182, 175, 220, 0.36),
+    -5px -5px 12px rgba(255, 255, 255, 0.95);
 }
 
 .badge-avatar {
@@ -124,8 +126,8 @@ body {
   border-radius: 999px;
   background: #f4f2ff;
   box-shadow:
-    inset 2px 2px 4px rgba(196, 191, 225, 0.8),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.95);
+    6px 6px 13px rgba(176, 169, 216, 0.44),
+    -3px -3px 8px rgba(255, 255, 255, 0.92);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -133,10 +135,22 @@ body {
   color: #757c93;
   border: none;
   cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
 }
 
 .mode-pill span {
   user-select: none;
+}
+
+.mode-pill:hover {
+  background: #f7f5ff;
+  box-shadow:
+    7px 7px 15px rgba(176, 169, 216, 0.47),
+    -3px -3px 8px rgba(255, 255, 255, 0.95);
 }
 
 .mode-pill:active {
@@ -144,6 +158,65 @@ body {
   box-shadow:
     inset 3px 3px 6px rgba(184, 178, 219, 0.9),
     inset -2px -2px 4px rgba(255, 255, 255, 0.95);
+}
+
+/* indicate selected state for batch-size pills */
+.mode-pill.selected {
+  background: #ece8ff;
+  color: #4a4f66;
+  box-shadow:
+    inset 2px 2px 4px rgba(186, 178, 226, 0.85),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.95);
+}
+
+.mode-pill.selected .mode-dot {
+  background: #7b5df0;
+}
+
+.batch-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.batch-options {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.batch-option {
+  min-width: 80px;
+  position: relative;
+  justify-content: center;
+  padding-left: 26px;
+  padding-right: 14px;
+}
+
+.batch-option:hover {
+  background: #f7f5ff;
+}
+
+.batch-option.selected {
+  color: #515770;
+}
+
+.batch-option .mode-dot {
+  position: absolute;
+  left: 12px;
+  background: #b8bccb;
+  box-shadow: 0 0 0 4px rgba(184, 188, 203, 0.22);
+}
+
+.batch-option.selected .mode-dot {
+  background: #7b5df0;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.32);
+}
+
+.batch-option span {
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 .mode-dot {

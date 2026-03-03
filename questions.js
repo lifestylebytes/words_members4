@@ -455,7 +455,7 @@ const QUESTIONS = [
   {
     "answer": "Is now a good time?",
     "prefix": "",
-    "suffix": "Is now a good time to talk for 2 minutes?",
+    "suffix": " to talk for 2 minutes?",
     "meaning": "지금 괜찮은 시간일까요? (통화나 캐치업 하기 전에)",
     "translation": "지금 2분 정도 통화 괜찮으실까요?",
     "day": 22,
