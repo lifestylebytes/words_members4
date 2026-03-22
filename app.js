@@ -1,13 +1,37 @@
 // app.js
 
+function getKSTDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false
+  });
 
-function getTodayKST() {
-  const now = new Date();
-  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  return kst.toISOString().slice(0, 10);
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date).map(part => [part.type, part.value])
+  );
+
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    hour: Number(parts.hour || 0)
+  };
 }
 
-const TODAY = getTodayKST();
+function getReleaseDateKST(releaseHour = 0) {
+  const now = getKSTDateParts();
+  if (now.hour >= releaseHour) return now.date;
+
+  const base = new Date(`${now.date}T00:00:00+09:00`);
+  base.setDate(base.getDate() - 1);
+  return getKSTDateParts(base).date;
+}
+
+const QUIZ_START_DATE = "2026-03-23";
+const RELEASE_HOUR_KST = 0;
+const PREMIUM_CODE = "7777";
 const FINAL_BUTTON_DATE = "2026-02-01";
 
 // questions.js에서 QUESTIONS 사용 (전역)
@@ -16,14 +40,32 @@ const QUESTIONS_SOURCE =
     ? QUESTIONS
     : [];
 
-const AVAILABLE_QUESTIONS = QUESTIONS_SOURCE.filter(
-  q => q.addedDate && q.addedDate <= TODAY
-);
+function getAvailableQuestions() {
+  const releaseDate = getReleaseDateKST(RELEASE_HOUR_KST);
+  return QUESTIONS_SOURCE.filter(q => q.addedDate && q.addedDate <= releaseDate);
+}
 
-// 실제 사용자에게 제시할 문제들 (visible !== false)
-const PLAYABLE_QUESTIONS = AVAILABLE_QUESTIONS.filter(
-  q => q.visible !== false
-);
+function isSynonymQuestion(question) {
+  return question && question.category === "유의어";
+}
+
+function getPlayableQuestions() {
+  return getAvailableQuestions().filter(q => q.visible !== false);
+}
+
+function getStandardQuestions() {
+  return getPlayableQuestions().filter(q => !isSynonymQuestion(q));
+}
+
+function getCurrentPoolQuestions() {
+  return premiumUnlocked ? getPlayableQuestions() : getStandardQuestions();
+}
+
+function getPremiumQuestions() {
+  return getPlayableQuestions().filter(
+    q => isSynonymQuestion(q) || (Array.isArray(q.synonyms) && q.synonyms.length > 0)
+  );
+}
 
 
 // DOM 요소
@@ -39,8 +81,17 @@ const skipBtn = document.getElementById("skipBtn");
 const resetBtn = document.getElementById("resetBtn");
 const batch10Btn = document.getElementById("batch10Btn");
 const batch20Btn = document.getElementById("batch20Btn");
+const batchSelector = document.getElementById("batchSelector");
+const availabilityPill = document.getElementById("availabilityPill");
+const releaseSummaryEl = document.getElementById("releaseSummary");
 const mobileInput = document.getElementById("mobileInput");
 const finalLinkWrap = document.getElementById("finalLinkWrap");
+const premiumBtn = document.getElementById("premiumBtn");
+const premiumModal = document.getElementById("premiumModal");
+const premiumCodeInput = document.getElementById("premiumCodeInput");
+const premiumHint = document.getElementById("premiumHint");
+const premiumSubmitBtn = document.getElementById("premiumSubmitBtn");
+const premiumCancelBtn = document.getElementById("premiumCancelBtn");
 
 // 상태값
 let questions = [];
@@ -48,6 +99,7 @@ let currentIndex = 0;
 let correctCount = 0;
 let wrongCount = 0;
 let currentSessionLimit = 10;
+let premiumUnlocked = false;
 
 // 한 글자 박스 정보
 let slots = [];      // [{ isSpace: true/false }]
@@ -70,7 +122,7 @@ function shuffle(array) {
 // 세션용 문제 (기본 10개, 질문이 부족하면 전체 사용)
 // visible !== false인 항목만 사용
 function pickSessionQuestions(limit = 10) {
-  const copy = [...PLAYABLE_QUESTIONS];
+  const copy = [...getCurrentPoolQuestions()];
   shuffle(copy);
   const realLimit = Math.min(limit, copy.length);
   return copy.slice(0, realLimit);
@@ -82,10 +134,22 @@ function updateScore() {
     scoreEl.textContent = "";
     return;
   }
-  scoreEl.textContent = `Score (${currentSessionLimit}문제): ${correctCount}/${currentSessionLimit}`;
+  scoreEl.textContent = `Score (${questions.length}문제): ${correctCount}/${questions.length}`;
 }
 
 function updateBatchSelectorUI() {
+  const playableCount = getCurrentPoolQuestions().length;
+  const hideBatchButtons = playableCount < 10;
+
+  if (batchSelector) {
+    batchSelector.classList.toggle("hidden", hideBatchButtons);
+  }
+  if (availabilityPill) {
+    availabilityPill.classList.toggle("hidden", !hideBatchButtons);
+    availabilityPill.textContent = hideBatchButtons
+      ? `오늘은 공개된 ${playableCount}문제 전체 풀이`
+      : "";
+  }
   if (batch10Btn) {
     batch10Btn.classList.toggle("selected", currentSessionLimit === 10);
     batch10Btn.setAttribute("aria-pressed", currentSessionLimit === 10 ? "true" : "false");
@@ -94,6 +158,25 @@ function updateBatchSelectorUI() {
     batch20Btn.classList.toggle("selected", currentSessionLimit === 20);
     batch20Btn.setAttribute("aria-pressed", currentSessionLimit === 20 ? "true" : "false");
   }
+}
+
+function updateReleaseSummary() {
+  if (!releaseSummaryEl) return;
+
+  const standardCount = getStandardQuestions().length;
+  const premiumCount = getPremiumQuestions().length;
+  const premiumText = premiumUnlocked
+    ? (premiumCount > 0 ? `프리미엄 유의어 ${premiumCount}문제 포함` : "프리미엄 ON")
+    : "Standard";
+
+  releaseSummaryEl.textContent =
+    `시작일 ${QUIZ_START_DATE} · 매일 00:00 KST 공개 · 기본 ${standardCount}개 공개 · ${premiumText}`;
+}
+
+function updatePremiumButtonUI() {
+  if (!premiumBtn) return;
+  premiumBtn.classList.toggle("active", premiumUnlocked);
+  premiumBtn.querySelector("span").textContent = premiumUnlocked ? "Premium ON" : "Premium";
 }
 
 // 문자열 정규화 기본
@@ -268,15 +351,20 @@ function setSentence(q) {
   }
 
   // 예문 해석 + 뜻 : ~ 형태로 보여주기 (뜻은 밑에 + 보라색)
+  const categoryBadge = isSynonymQuestion(q)
+    ? `<div class="question-category">Premium · 유의어</div>`
+    : "";
+
   if (q.translation && q.meaning) {
     meaningEl.innerHTML = `
+      ${categoryBadge}
       <div class="translation-line">${q.translation}</div>
       <div class="meaning-line">${cleanMeaning(`뜻 : ${q.meaning}`)}</div>
     `;
   } else if (q.translation) {
-    meaningEl.innerHTML = `<div class="translation-line">${q.translation}</div>`;
+    meaningEl.innerHTML = `${categoryBadge}<div class="translation-line">${q.translation}</div>`;
   } else if (q.meaning) {
-    meaningEl.innerHTML = `<div class="meaning-line">${cleanMeaning(`뜻 : ${q.meaning}`)}</div>`;
+    meaningEl.innerHTML = `${categoryBadge}<div class="meaning-line">${cleanMeaning(`뜻 : ${q.meaning}`)}</div>`;
   } else {
     meaningEl.textContent = "";
   }
@@ -290,8 +378,9 @@ function setSentence(q) {
   progressEl.textContent = `Q ${currentIndex + 1} / ${questions.length}`;
   updateScore();
 
+  const availableCount = getCurrentPoolQuestions().length;
   progressEl.textContent =
-    `오늘까지 공개된 단어 ${AVAILABLE_QUESTIONS.length}개 중 Q ${currentIndex + 1}`;
+    `오늘까지 공개된 단어 ${availableCount}개 중 Q ${currentIndex + 1}`;
 }
 
 // 다음 문제
@@ -444,14 +533,18 @@ function focusMobileInput() {
 // resetAll now accepts a limit for number of questions (default 10)
 function resetAll(limit = 10) {
   currentSessionLimit = limit;
+  updateReleaseSummary();
   updateBatchSelectorUI();
   questions = pickSessionQuestions(limit);
 
 
   if (questions.length === 0) {
-    prefixEl.textContent = "⏳ 오늘의 단어는 자정에 공개됩니다";
+    prefixEl.textContent = "⏳ 공개된 단어가 아직 없습니다";
     suffixEl.textContent = "";
-    meaningEl.textContent = "";
+    meaningEl.innerHTML = `
+      <div class="translation-line">첫 공개는 ${QUIZ_START_DATE} 00:00 KST부터 시작됩니다.</div>
+      <div class="meaning-line">공개 시점이 지나면 그날 분량까지 자동으로 열립니다.</div>
+    `;
     slotsContainer.innerHTML = "";
     progressEl.textContent = "";
     statusEl.textContent = "";
@@ -491,6 +584,46 @@ function updateFinalLinkVisibility() {
   if (!finalLinkWrap) return;
   // Temporarily keep Final Test link hidden per request
   finalLinkWrap.classList.add("hidden");
+}
+
+function openPremiumModal() {
+  if (!premiumModal) return;
+  premiumModal.classList.remove("hidden");
+  if (premiumCodeInput) {
+    premiumCodeInput.value = "";
+    setTimeout(() => premiumCodeInput.focus(), 0);
+  }
+  if (premiumHint) {
+    premiumHint.textContent = "코드를 입력하면 프리미엄 모드가 켜집니다.";
+    premiumHint.className = "premium-hint";
+  }
+}
+
+function closePremiumModal() {
+  if (!premiumModal) return;
+  premiumModal.classList.add("hidden");
+}
+
+function submitPremiumCode() {
+  if (!premiumCodeInput) return;
+
+  const code = premiumCodeInput.value.trim();
+  if (code !== PREMIUM_CODE) {
+    premiumHint.textContent = "코드가 맞지 않습니다.";
+    premiumHint.className = "premium-hint error";
+    return;
+  }
+
+  premiumUnlocked = true;
+  updatePremiumButtonUI();
+  updateReleaseSummary();
+  closePremiumModal();
+  resetAll(currentSessionLimit);
+
+  statusEl.textContent = getPremiumQuestions().length
+    ? "프리미엄 모드가 켜졌습니다. 유의어 문제까지 함께 출제됩니다."
+    : "프리미엄 모드가 켜졌습니다. 유의어 데이터가 추가되면 바로 함께 출제됩니다.";
+  statusEl.className = "status correct";
 }
 
 // 🔤 실제로 한 글자 입력 처리 (PC/모바일 공통)
@@ -618,6 +751,36 @@ document.getElementById("retryBtn").addEventListener("click", () => {
   resetAll(currentSessionLimit);
 });
 
+if (premiumBtn) {
+  premiumBtn.addEventListener("click", openPremiumModal);
+}
+
+if (premiumSubmitBtn) {
+  premiumSubmitBtn.addEventListener("click", submitPremiumCode);
+}
+
+if (premiumCancelBtn) {
+  premiumCancelBtn.addEventListener("click", closePremiumModal);
+}
+
+if (premiumCodeInput) {
+  premiumCodeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitPremiumCode();
+    }
+  });
+}
+
+if (premiumModal) {
+  premiumModal.addEventListener("click", (e) => {
+    if (e.target === premiumModal) {
+      closePremiumModal();
+    }
+  });
+}
+
 // 시작
+updatePremiumButtonUI();
 resetAll()
 updateFinalLinkVisibility();

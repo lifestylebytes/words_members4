@@ -244,6 +244,45 @@ body {
   background: #f7f5ff;
 }
 
+.premium-pill {
+  background: linear-gradient(135deg, #fff6d7 0%, #ffe7a3 100%);
+  color: #6f5613;
+  box-shadow:
+    6px 6px 14px rgba(206, 182, 101, 0.28),
+    -3px -3px 8px rgba(255, 250, 230, 0.95);
+}
+
+.premium-pill .mode-dot {
+  background: #d7a72a;
+  box-shadow: 0 0 0 4px rgba(215, 167, 42, 0.18);
+}
+
+.premium-pill.active {
+  background: linear-gradient(135deg, #ffd86b 0%, #ffbf47 100%);
+  color: #4d3a08;
+}
+
+.availability-pill,
+.release-summary {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(216, 211, 242, 0.9);
+  color: #68708c;
+}
+
+.availability-pill {
+  padding: 9px 14px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.release-summary {
+  align-self: flex-start;
+  padding: 9px 16px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 /* ---------- 문장 카드 영역 ---------- */
 
 .sentence-card {
@@ -523,6 +562,11 @@ body {
     justify-content: flex-end;
   }
 
+  .release-summary {
+    width: 100%;
+    text-align: center;
+  }
+
   .card {
     padding: 22px 18px 18px;
     border-radius: 26px;
@@ -552,6 +596,11 @@ body {
     text-align: center;
   }
 
+  .availability-pill {
+    width: 100%;
+    text-align: center;
+  }
+
 }
 
 /* 정답 텍스트를 슬롯과 동일한 폰트로 보여주기 */
@@ -563,6 +612,17 @@ body {
   margin-bottom: 6px;      /* 뜻이랑 약간 띄우기 */
   font-size: 14px;
   line-height: 1.4;
+}
+
+.question-category {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff0bf;
+  color: #7a5b00;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .meaning-line {
@@ -672,6 +732,90 @@ body {
   font-weight: 700;
   margin-bottom: 4px;
   font-size: 15px;
+}
+
+.ghost-btn {
+  background: #f4f2ff;
+  color: #646b82;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.premium-modal-content {
+  max-width: 400px;
+  text-align: left;
+}
+
+.premium-kicker {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff2c8;
+  color: #7a5b00;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.premium-modal-message {
+  margin-top: 14px;
+  margin-bottom: 18px;
+  color: #30364a;
+}
+
+.premium-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #666e86;
+  font-weight: 600;
+}
+
+.premium-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #ddd4fb;
+  background: #faf8ff;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  text-align: center;
+  color: #31364a;
+  outline: none;
+}
+
+.premium-input:focus {
+  border-color: #c9b7ff;
+  box-shadow: 0 0 0 4px rgba(169, 139, 250, 0.12);
+}
+
+.premium-hint {
+  min-height: 20px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #7d849a;
+}
+
+.premium-hint.error {
+  color: #c54d62;
+}
+
+.premium-modal-buttons {
+  margin-top: 12px;
+}
+
+.premium-submit-btn {
+  background: linear-gradient(135deg, #ffcf57 0%, #f0b533 100%);
+  color: #4e3903;
+}
+
+.premium-submit-btn:hover {
+  background: linear-gradient(135deg, #ffd872 0%, #f3bf48 100%);
 }
 
 .mobile-input {

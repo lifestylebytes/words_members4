@@ -4,9 +4,9 @@
  *
  * Fetches rows from a Notion database and updates `questions.js` with entries.
  * Usage:
- *   node scripts/sync_db.js --source notion [--start 2026-02-18] [--commit]
+ *   node scripts/sync_db.js --database-id <id> [--start 2026-03-23] [--base-day 1] [--ignore-added-date] [--overwrite]
  *
- * It expects `.env.local` (or environment) to contain NOTION_SECRET and NOTION_DATABASE_ID.
+ * It expects `.env.local` (or environment) to contain NOTION_SECRET and optionally NOTION_DATABASE_ID.
  */
 
 const fs = require('fs');
@@ -15,21 +15,28 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const NOTION_SECRET = (process.env.NOTION_SECRET || '').trim();
-const NOTION_DATABASE_ID = (process.env.NOTION_DATABASE_ID || '').replace(/"/g, '').trim();
+const ENV_NOTION_DATABASE_ID = (process.env.NOTION_DATABASE_ID || '').replace(/"/g, '').trim();
 
-if (!NOTION_SECRET || !NOTION_DATABASE_ID) {
-  console.error('Missing NOTION_SECRET or NOTION_DATABASE_ID in environment.');
+if (!NOTION_SECRET) {
+  console.error('Missing NOTION_SECRET in environment.');
   process.exit(1);
 }
 
 const QUESTIONS_FILE = path.join(process.cwd(), 'questions.js');
 
 const argv = require('minimist')(process.argv.slice(2));
-const startDateStr = argv.start || '2026-02-18';
+const notionDatabaseId = String(argv['database-id'] || ENV_NOTION_DATABASE_ID || '').replace(/"/g, '').trim();
+const startDateStr = argv.start || '2026-03-23';
 const doCommit = argv.commit || false;
 const doOverwrite = argv.overwrite || false;
-const baseDay = argv['base-day'] ? parseInt(argv['base-day'], 10) : 10;
+const baseDay = argv['base-day'] ? parseInt(argv['base-day'], 10) : 1;
 const doDry = argv.dry || false;
+const ignoreAddedDate = argv['ignore-added-date'] || false;
+
+if (!notionDatabaseId) {
+  console.error('Missing Notion database id. Pass --database-id or set NOTION_DATABASE_ID.');
+  process.exit(1);
+}
 
 function formatDate(d) {
   const y = d.getFullYear();
@@ -55,7 +62,7 @@ async function fetchNotionPages() {
 
   let next_cursor = null;
   do {
-    const url = `https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`;
+    const url = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
     const body = next_cursor ? { start_cursor: next_cursor } : {};
     const res = await fetch(url, {
       method: 'POST',
@@ -106,6 +113,7 @@ function mapPageToEntry(page) {
   // DB change: previous "뜻 (클릭하면 설명)" renamed to "어휘"; a new "뜻" property exists for definition
   const answerKeys = ['어휘', '뜻 (클릭하면 설명)', 'meaning', 'vocab', 'word'];
   const meaningKeys = ['뜻', 'meaning', 'definition', '설명'];
+  const categoryKeys = ['구분', 'category', 'type'];
   const dayKeys = ['day', 'Day', 'Day'];
 
   function findProp(keysList) {
@@ -121,11 +129,13 @@ function mapPageToEntry(page) {
   const translationProp = findProp(translationKeys);
   const answerProp = findProp(answerKeys);
   const meaningProp = findProp(meaningKeys);
+  const categoryProp = findProp(categoryKeys);
   const dayProp = findProp(Object.keys(props));
 
   const fullSentence = propText(sentenceProp) || '';
   const translation = propText(translationProp) || '';
   const meaning = propText(meaningProp) || '';
+  const category = propText(categoryProp) || '기본';
 
   // answer: prefer answerProp (new column '어휘'), fall back to old/meaning fields
   let answer = propText(answerProp) || '';
@@ -212,14 +222,22 @@ function mapPageToEntry(page) {
     suffix: suffix || '',
     meaning: (meaning || '').trim(),
     translation: (translation || '').trim(),
+    category: (category || '기본').trim(),
     dayRaw: dayRaw || '',
     addedDateRaw: addedDateRaw || ''
   };
 }
 
-function computeAddedDateForDay(dayNumber, startDateStr, baseDayNumber = 10) {
+function computeReleaseIndexFromDayLabel(dayNumber, baseDayNumber = 1) {
+  const normalized = Math.max(baseDayNumber, dayNumber) - baseDayNumber;
+  const weekIndex = Math.floor(normalized / 7);
+  const weekdayIndex = normalized % 7;
+  return (weekIndex * 5) + weekdayIndex;
+}
+
+function computeAddedDateForDay(dayNumber, startDateStr, baseDayNumber = 1) {
   const start = new Date(startDateStr + 'T00:00:00');
-  const offset = Math.max(0, dayNumber - baseDayNumber);
+  const offset = Math.max(0, computeReleaseIndexFromDayLabel(dayNumber, baseDayNumber));
   const target = addBusinessDays(start, offset);
   return formatDate(target);
 }
@@ -249,13 +267,16 @@ async function main() {
     mappedList.slice(0, 20).forEach((mapped, idx) => {
       const dayNumMatch = (mapped.dayRaw && mapped.dayRaw.match(/\d+/));
       const dayNum = dayNumMatch ? parseInt(dayNumMatch[0], 10) : baseDay;
-      let added = mapped.addedDateRaw || computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
+      let added = (!ignoreAddedDate && mapped.addedDateRaw)
+        ? mapped.addedDateRaw
+        : computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
       console.log(`\nEntry ${idx + 1}:`);
       console.log(`  answer: ${mapped.answer}`);
       console.log(`  prefix: ${mapped.prefix}`);
       console.log(`  suffix: ${mapped.suffix}`);
       console.log(`  meaning: ${mapped.meaning}`);
       console.log(`  translation: ${mapped.translation}`);
+      console.log(`  category: ${mapped.category}`);
       console.log(`  dayRaw: ${mapped.dayRaw}`);
       console.log(`  addedDateRaw: ${mapped.addedDateRaw}`);
       console.log(`  -> final addedDate: ${added}`);
@@ -265,7 +286,9 @@ async function main() {
     const mappedAll = mappedList.map(m => {
       const dayNumMatch = (m.dayRaw && m.dayRaw.match(/\d+/));
       const dayNum = dayNumMatch ? parseInt(dayNumMatch[0], 10) : baseDay;
-      const addedDate = m.addedDateRaw || computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
+      const addedDate = (!ignoreAddedDate && m.addedDateRaw)
+        ? m.addedDateRaw
+        : computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
       return { ...m, addedDate };
     });
     const todayKST = formatDate(new Date(Date.now() + 9 * 60 * 60 * 1000));
@@ -309,7 +332,7 @@ async function main() {
     let addedDate = '';
     
     // If the entry has an explicit addedDateRaw from Notion, use it
-    if (e.addedDateRaw) {
+    if (!ignoreAddedDate && e.addedDateRaw) {
       addedDate = e.addedDateRaw;
     } else {
       // Otherwise compute from day number
@@ -322,6 +345,7 @@ async function main() {
       suffix: e.suffix || '',
       meaning: e.meaning || '',
       translation: e.translation || '',
+      category: e.category || '기본',
       day: e.day || baseDay,
       addedDate: addedDate
     };

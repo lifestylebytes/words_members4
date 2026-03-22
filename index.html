@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>You Buddy 2026 단어 테스트</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css?v=20260304-2" />
+  <link rel="stylesheet" href="style.css?v=20260322-1" />
 </head>
 <body>
   <div class="card" id="card">
@@ -14,7 +14,7 @@
         <div class="members-tag">*members only</div>
 
         <a
-          href="https://apple-libra-6af.notion.site/30-2fe1fc05de1e807c9965db406bb35249?source=copy_link"
+          href="https://www.notion.so/4-8ef19325b9ce4f8e80948560b8823d0c?t=32b1fc05de1e8072996f00a9ea08ef5e"
           target="_blank"
           class="badge-link"
         >
@@ -29,8 +29,12 @@
       </div>
 
       <div class="right-actions">
+        <button class="mode-pill premium-pill" id="premiumBtn" type="button">
+          <div class="mode-dot"></div>
+          <span>Premium</span>
+        </button>
         <a class="beta-link" href="beta.html">Beta 테스트</a>
-        <div class="batch-selector">
+        <div class="batch-selector" id="batchSelector">
           <div class="batch-options" role="group" aria-label="문제 수 선택">
             <button class="mode-pill batch-option selected" id="batch10Btn" type="button">
               <div class="mode-dot"></div>
@@ -42,12 +46,16 @@
             </button>
           </div>
         </div>
+        <div class="availability-pill hidden" id="availabilityPill"></div>
         <button class="mode-pill" id="resetBtn" type="button">
           <div class="mode-dot"></div>
           <span>Reset</span>
         </button>
       </div>
     </div>
+
+    <div class="release-summary" id="releaseSummary"></div>
+
     <div class="sentence-card">
       <div class="sentence-line">
         
@@ -104,14 +112,28 @@
         <button id="retryBtn" class="retry-btn">🔄 다시하기</button>
 
         <a 
-          href="https://apple-libra-6af.notion.site/30-2fe1fc05de1e807c9965db406bb35249?source=copy_link"
+          href="https://www.notion.so/4-8ef19325b9ce4f8e80948560b8823d0c?t=32b1fc05de1e8072996f00a9ea08ef5e"
           target="_blank"
           class="notion-btn"
         >
-          📘 유버디 영어 루틴
+          📘 4기 단어장 보기
           </a>
       </div>
 
+    </div>
+  </div>
+
+  <div id="premiumModal" class="modal hidden">
+    <div class="modal-content premium-modal-content">
+      <div class="premium-kicker">Premium Access</div>
+      <div class="modal-message premium-modal-message">입장 코드 : ____<br />유의어까지 테스트합니다.</div>
+      <label class="premium-label" for="premiumCodeInput">입장 코드</label>
+      <input id="premiumCodeInput" class="premium-input" type="password" inputmode="numeric" autocomplete="one-time-code" placeholder="7777" />
+      <div id="premiumHint" class="premium-hint">코드를 입력하면 프리미엄 모드가 켜집니다.</div>
+      <div class="modal-buttons premium-modal-buttons">
+        <button id="premiumSubmitBtn" class="retry-btn premium-submit-btn" type="button">프리미엄 시작</button>
+        <button id="premiumCancelBtn" class="ghost-btn" type="button">닫기</button>
+      </div>
     </div>
   </div>
 
