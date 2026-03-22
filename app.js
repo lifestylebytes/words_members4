@@ -40,9 +40,48 @@ const QUESTIONS_SOURCE =
     ? QUESTIONS
     : [];
 
+function isLocalHost() {
+  const host = window.location.hostname;
+  return !host || host === "localhost" || host === "127.0.0.1";
+}
+
+function getPreviewReleaseDate() {
+  if (!isLocalHost()) return null;
+
+  const params = new URLSearchParams(window.location.search);
+  const previewDate = params.get("previewDate");
+  if (previewDate && /^\d{4}-\d{2}-\d{2}$/.test(previewDate)) {
+    return previewDate;
+  }
+
+  const previewDayRaw = params.get("previewDay");
+  const previewDay = previewDayRaw ? Number(previewDayRaw) : NaN;
+  if (!Number.isFinite(previewDay)) return null;
+
+  const matchingDates = QUESTIONS_SOURCE
+    .filter(q => Number(q.day) <= previewDay && q.addedDate)
+    .map(q => q.addedDate)
+    .sort();
+
+  return matchingDates.length ? matchingDates[matchingDates.length - 1] : null;
+}
+
 function getAvailableQuestions() {
-  const releaseDate = getReleaseDateKST(RELEASE_HOUR_KST);
+  const releaseDate = getPreviewReleaseDate() || getReleaseDateKST(RELEASE_HOUR_KST);
   return QUESTIONS_SOURCE.filter(q => q.addedDate && q.addedDate <= releaseDate);
+}
+
+function getPreviewDayLabel() {
+  const previewDate = getPreviewReleaseDate();
+  if (!previewDate) return "";
+
+  const matchedDay = QUESTIONS_SOURCE
+    .filter(q => q.addedDate === previewDate)
+    .map(q => Number(q.day))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b)[0];
+
+  return matchedDay ? `Day ${matchedDay} 미리보기` : "로컬 미리보기";
 }
 
 function isSynonymQuestion(question) {
@@ -100,6 +139,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let currentSessionLimit = 10;
 let premiumUnlocked = false;
+let suppressNextGlobalEnter = false;
 
 // 한 글자 박스 정보
 let slots = [];      // [{ isSpace: true/false }]
@@ -145,10 +185,8 @@ function updateBatchSelectorUI() {
     batchSelector.classList.toggle("hidden", hideBatchButtons);
   }
   if (availabilityPill) {
-    availabilityPill.classList.toggle("hidden", !hideBatchButtons);
-    availabilityPill.textContent = hideBatchButtons
-      ? `오늘은 공개된 ${playableCount}문제 전체 풀이`
-      : "";
+    availabilityPill.classList.add("hidden");
+    availabilityPill.textContent = "";
   }
   if (batch10Btn) {
     batch10Btn.classList.toggle("selected", currentSessionLimit === 10);
@@ -165,18 +203,22 @@ function updateReleaseSummary() {
 
   const standardCount = getStandardQuestions().length;
   const premiumCount = getPremiumQuestions().length;
+  const previewReleaseDate = getPreviewReleaseDate();
   const premiumText = premiumUnlocked
-    ? (premiumCount > 0 ? `프리미엄 유의어 ${premiumCount}문제 포함` : "프리미엄 ON")
-    : "Standard";
+    ? (premiumCount > 0 ? `Premium ${standardCount + premiumCount}문제` : "Premium ON")
+    : `기본 ${standardCount}문제`;
 
   releaseSummaryEl.textContent =
-    `시작일 ${QUIZ_START_DATE} · 매일 00:00 KST 공개 · 기본 ${standardCount}개 공개 · ${premiumText}`;
+    previewReleaseDate
+      ? `${getPreviewDayLabel()} · ${premiumText}`
+      : `오늘의 단어 · ${premiumText}`;
   releaseSummaryEl.classList.remove("hidden");
 }
 
 function updatePremiumButtonUI() {
   if (!premiumBtn) return;
   premiumBtn.classList.toggle("active", premiumUnlocked);
+  premiumBtn.setAttribute("aria-pressed", premiumUnlocked ? "true" : "false");
   premiumBtn.querySelector("span").textContent = premiumUnlocked ? "Premium ON" : "Premium";
 }
 
@@ -592,7 +634,10 @@ function openPremiumModal() {
   premiumModal.classList.remove("hidden");
   if (premiumCodeInput) {
     premiumCodeInput.value = "";
-    setTimeout(() => premiumCodeInput.focus(), 0);
+    setTimeout(() => {
+      premiumCodeInput.focus();
+      premiumCodeInput.select();
+    }, 0);
   }
   if (premiumHint) {
     premiumHint.textContent = "코드를 입력하면 프리미엄 모드가 켜집니다.";
@@ -603,6 +648,15 @@ function openPremiumModal() {
 function closePremiumModal() {
   if (!premiumModal) return;
   premiumModal.classList.add("hidden");
+}
+
+function disablePremiumMode() {
+  premiumUnlocked = false;
+  updatePremiumButtonUI();
+  updateReleaseSummary();
+  resetAll(currentSessionLimit);
+  statusEl.textContent = "기본 모드로 돌아왔습니다.";
+  statusEl.className = "status";
 }
 
 function submitPremiumCode() {
@@ -625,6 +679,10 @@ function submitPremiumCode() {
     ? "프리미엄 모드가 켜졌습니다. 유의어 문제까지 함께 출제됩니다."
     : "프리미엄 모드가 켜졌습니다. 유의어 데이터가 추가되면 바로 함께 출제됩니다.";
   statusEl.className = "status correct";
+}
+
+function isPremiumModalOpen() {
+  return premiumModal && !premiumModal.classList.contains("hidden");
 }
 
 // 🔤 실제로 한 글자 입력 처리 (PC/모바일 공통)
@@ -668,6 +726,13 @@ function applyChar(rawCh) {
 // -------------------- 키보드 입력 --------------------
 
 function handleKey(e) {
+  if (isPremiumModalOpen()) return;
+  if (suppressNextGlobalEnter && e.key === "Enter") {
+    e.preventDefault();
+    e.stopPropagation();
+    suppressNextGlobalEnter = false;
+    return;
+  }
   if (!questions.length) return;
   if (currentIndex >= questions.length) return;
 
@@ -753,7 +818,13 @@ document.getElementById("retryBtn").addEventListener("click", () => {
 });
 
 if (premiumBtn) {
-  premiumBtn.addEventListener("click", openPremiumModal);
+  premiumBtn.addEventListener("click", () => {
+    if (premiumUnlocked) {
+      disablePremiumMode();
+      return;
+    }
+    openPremiumModal();
+  });
 }
 
 if (premiumSubmitBtn) {
@@ -768,6 +839,8 @@ if (premiumCodeInput) {
   premiumCodeInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      e.stopPropagation();
+      suppressNextGlobalEnter = true;
       submitPremiumCode();
     }
   });

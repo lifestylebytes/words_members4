@@ -272,15 +272,16 @@ body {
 
 .availability-pill {
   padding: 9px 14px;
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .release-summary {
   align-self: flex-start;
-  padding: 9px 16px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
   line-height: 1.4;
+  font-weight: 600;
 }
 
 /* ---------- 문장 카드 영역 ---------- */
@@ -748,15 +749,16 @@ body {
 .premium-modal-content {
   max-width: 400px;
   text-align: left;
+  padding: 32px 28px 26px;
 }
 
 .premium-kicker {
   display: inline-flex;
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 999px;
   background: #fff2c8;
   color: #7a5b00;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -764,8 +766,10 @@ body {
 
 .premium-modal-message {
   margin-top: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   color: #30364a;
+  font-size: 18px;
+  line-height: 1.45;
 }
 
 .premium-label {
@@ -782,11 +786,12 @@ body {
   border-radius: 14px;
   border: 1px solid #ddd4fb;
   background: #faf8ff;
-  font-size: 20px;
-  letter-spacing: 0.2em;
+  font-size: 22px;
+  letter-spacing: 0.08em;
   text-align: center;
   color: #31364a;
   outline: none;
+  caret-color: #7b5df0;
 }
 
 .premium-input:focus {
@@ -794,10 +799,16 @@ body {
   box-shadow: 0 0 0 4px rgba(169, 139, 250, 0.12);
 }
 
+.premium-input::placeholder {
+  color: #b2abc8;
+  letter-spacing: 0;
+  font-size: 18px;
+}
+
 .premium-hint {
   min-height: 20px;
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 14px;
   color: #7d849a;
 }
 
