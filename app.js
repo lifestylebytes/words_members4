@@ -171,6 +171,7 @@ function updateReleaseSummary() {
 
   releaseSummaryEl.textContent =
     `시작일 ${QUIZ_START_DATE} · 매일 00:00 KST 공개 · 기본 ${standardCount}개 공개 · ${premiumText}`;
+  releaseSummaryEl.classList.remove("hidden");
 }
 
 function updatePremiumButtonUI() {
