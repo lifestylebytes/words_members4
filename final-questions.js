@@ -21,6 +21,8 @@
   // midnight of their `addedDate` in the user's local timezone.
   const VISIBLE_SOURCE = SOURCE.filter(item => {
     if (!item || !item.answer) return false;
+    // Respect the visible flag; explicit `false` means hide completely.
+    if (item.visible === false) return false;
     if (!item.addedDate) return true;
     return item.addedDate <= todayStr;
   });

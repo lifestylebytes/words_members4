@@ -194,6 +194,17 @@ function mapPageToEntry(page) {
     return '';
   })();
 
+  // Extract added date from Notion (e.g. "added date", "addedDate", "Added Date")
+  const addedDateRaw = (function () {
+    for (const k of Object.keys(props)) {
+      if (/^added\s*date$/i.test(k)) {
+        const prop = props[k];
+        if (prop.date && prop.date.start) return prop.date.start;
+      }
+    }
+    return '';
+  })();
+
   return {
     answer: (answer || '').trim(),
     // preserve prefix/suffix spacing (do not trim) so UI can decide how to attach punctuation
@@ -201,7 +212,8 @@ function mapPageToEntry(page) {
     suffix: suffix || '',
     meaning: (meaning || '').trim(),
     translation: (translation || '').trim(),
-    dayRaw: dayRaw || ''
+    dayRaw: dayRaw || '',
+    addedDateRaw: addedDateRaw || ''
   };
 }
 
@@ -237,7 +249,7 @@ async function main() {
     mappedList.slice(0, 20).forEach((mapped, idx) => {
       const dayNumMatch = (mapped.dayRaw && mapped.dayRaw.match(/\d+/));
       const dayNum = dayNumMatch ? parseInt(dayNumMatch[0], 10) : baseDay;
-      const added = computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
+      let added = mapped.addedDateRaw || computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
       console.log(`\nEntry ${idx + 1}:`);
       console.log(`  answer: ${mapped.answer}`);
       console.log(`  prefix: ${mapped.prefix}`);
@@ -245,14 +257,16 @@ async function main() {
       console.log(`  meaning: ${mapped.meaning}`);
       console.log(`  translation: ${mapped.translation}`);
       console.log(`  dayRaw: ${mapped.dayRaw}`);
-      console.log(`  -> computed addedDate: ${added}`);
+      console.log(`  addedDateRaw: ${mapped.addedDateRaw}`);
+      console.log(`  -> final addedDate: ${added}`);
     });
 
     // Also summarize visibility up to today (KST)
     const mappedAll = mappedList.map(m => {
       const dayNumMatch = (m.dayRaw && m.dayRaw.match(/\d+/));
       const dayNum = dayNumMatch ? parseInt(dayNumMatch[0], 10) : baseDay;
-      return { ...m, addedDate: computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay) };
+      const addedDate = m.addedDateRaw || computeAddedDateForDay(dayNum || baseDay, startDateStr, baseDay);
+      return { ...m, addedDate };
     });
     const todayKST = formatDate(new Date(Date.now() + 9 * 60 * 60 * 1000));
     const visibleCount = mappedAll.filter(x => x.addedDate && x.addedDate <= todayKST).length;
@@ -288,19 +302,76 @@ async function main() {
 
   const all = [...withDay, ...withoutDay];
 
-  // Now map day -> addedDate, but since days represent release days (3 words/day), we assume day numbers are release-day counters
+  // Now map day -> addedDate
+  // Priority: use addedDateRaw from Notion if available, otherwise compute from day
   const startDate = startDateStr;
-  const final = all.map(e => ({
-    answer: e.answer,
-    prefix: e.prefix || '',
-    suffix: e.suffix || '',
-    meaning: e.meaning || '',
-    translation: e.translation || '',
-    addedDate: computeAddedDateForDay(e.day || baseDay, startDate, baseDay)
-  }));
+  const final = all.map(e => {
+    let addedDate = '';
+    
+    // If the entry has an explicit addedDateRaw from Notion, use it
+    if (e.addedDateRaw) {
+      addedDate = e.addedDateRaw;
+    } else {
+      // Otherwise compute from day number
+      addedDate = computeAddedDateForDay(e.day || baseDay, startDate, baseDay);
+    }
+
+    return {
+      answer: e.answer,
+      prefix: e.prefix || '',
+      suffix: e.suffix || '',
+      meaning: e.meaning || '',
+      translation: e.translation || '',
+      day: e.day || baseDay,
+      addedDate: addedDate
+    };
+  });
+
+  // ensure any problematic answers are hidden by default; this covers both
+  // "This is, from" and any future "This is from" variations so they never
+  // show up in sessions even if the Notion data changes.
+  final.forEach(e => {
+    if (e.answer && /^this is,? from$/i.test(e.answer.trim())) {
+      e.visible = false;
+    }
+  });
+
+  // When overwriting, preserve any existing visibility flags so that manual
+  // adjustments (e.g. hiding a troublesome entry) are not lost on each sync.
+  // read raw file now so it is available for visibility preservation below
+  const raw = fs.readFileSync(QUESTIONS_FILE, 'utf8');
+
+  if (doOverwrite) {
+    const existingMap = {};
+    const m = raw.match(/const QUESTIONS =\s*\[(?:[\s\S]*?)\];/m);
+    if (m) {
+      try {
+        const arrText = m[0].replace(/const QUESTIONS =\s*/, '').replace(/;\s*$/, '');
+        const jsonText = arrText
+          .replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":')
+          .replace(/\'|\`/g, '"');
+        const existing = JSON.parse(jsonText);
+        existing.forEach(e => {
+          if (e && e.answer) {
+            existingMap[(e.answer || '').trim()] = e;
+          }
+        });
+      } catch (err) {
+        // parsing failed, ignore and don't preserve
+      }
+    }
+
+    // copy over visible flags if present in existing
+    final.forEach(e => {
+      const key = (e.answer || '').trim();
+      if (existingMap[key] && existingMap[key].visible !== undefined) {
+        e.visible = existingMap[key].visible;
+      }
+    });
+  }
 
   // Read existing questions.js
-  const raw = fs.readFileSync(QUESTIONS_FILE, 'utf8');
+  // (already read above for overwrite-preservation; raw variable still in scope)
 
   if (doOverwrite) {
     // Overwrite mode: replace QUESTIONS array entirely with `final` entries
