@@ -215,7 +215,7 @@ const QUESTIONS = [
     "answer": "ICYMI",
     "prefix": "",
     "suffix": ", we pushed the deadline to Friday.",
-    "meaning": "혹시 못 보셨을까 봐 / 놓치셨을까 봐 (in case you missed it)",
+    "meaning": "혹시 못 보셨을까 봐 / 놓치셨을까 봐",
     "translation": "혹시 못 보셨을까 봐, 마감일을 금요일로 미뤘어요.",
     "category": "기본",
     "day": 3,
@@ -1106,7 +1106,7 @@ const QUESTIONS = [
     "prefix": "Let’s ",
     "suffix": " later today.",
     "meaning": "연결해서 이야기하다",
-    "translation": "오늘 늦게 연결해서 얘기해요.",
+    "translation": "오늘 이따가 연결해서 얘기해요.",
     "category": "유의어",
     "day": 13,
     "addedDate": "2026-04-06"
