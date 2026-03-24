@@ -103,6 +103,66 @@ function propText(prop) {
   return '';
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizeAnswerForMatch(answer) {
+  return String(answer || '')
+    .replace(/[.…!?]+$/g, '')
+    .trim();
+}
+
+function buildPrefixSuffix(fullSentence, answer) {
+  let prefix = '';
+  let suffix = '';
+
+  if (!answer || !fullSentence) {
+    return { prefix, suffix: fullSentence || '' };
+  }
+
+  const rawAnswer = String(answer || '').trim();
+  const candidateAnswers = [rawAnswer, normalizeAnswerForMatch(rawAnswer)].filter(Boolean);
+
+  for (const candidate of candidateAnswers) {
+    try {
+      const re = new RegExp(escapeRegExp(candidate), 'i');
+      const match = re.exec(fullSentence);
+      if (match) {
+        return {
+          prefix: fullSentence.slice(0, match.index).replace(/\s+/g, ' '),
+          suffix: fullSentence.slice(match.index + match[0].length).replace(/\s+/g, ' ')
+        };
+      }
+    } catch (err) {
+      // fall through to fuzzy matching
+    }
+  }
+
+  const fuzzyWords = normalizeAnswerForMatch(rawAnswer)
+    .split(/\s+/)
+    .map(word => word.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, ''))
+    .filter(Boolean);
+
+  if (fuzzyWords.length > 0) {
+    try {
+      const fuzzy = fuzzyWords.map(word => `\\b${escapeRegExp(word)}\\b`).join('(?:[\\s\\W]{0,20})');
+      const re = new RegExp(fuzzy, 'iu');
+      const match = re.exec(fullSentence);
+      if (match) {
+        return {
+          prefix: fullSentence.slice(0, match.index).replace(/\s+/g, ' '),
+          suffix: fullSentence.slice(match.index + match[0].length).replace(/\s+/g, ' ')
+        };
+      }
+    } catch (err) {
+      // ignore and fall back to the full sentence
+    }
+  }
+
+  return { prefix, suffix: fullSentence };
+}
+
 function mapPageToEntry(page) {
   const props = page.properties || {};
   // Heuristics for common property names
@@ -152,47 +212,7 @@ function mapPageToEntry(page) {
   let prefix = '';
   let suffix = '';
   if (answer && fullSentence) {
-    try {
-      const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const re = new RegExp(escaped, 'i');
-      const match = re.exec(fullSentence);
-      if (match) {
-        const idx = match.index;
-        // Preserve the original spacing around the blank so punctuation stays
-        // in the correct place. Do not trim trailing/leading spaces here —
-        // keep the space before the answer as part of prefix and any
-        // following space as part of suffix.
-        prefix = fullSentence.slice(0, idx).replace(/\s+/g, ' ');
-        suffix = fullSentence.slice(idx + match[0].length).replace(/\s+/g, ' ');
-      } else {
-        // Try a fuzzy in-order match for multi-word answers where words
-        // may be separated by small words (e.g. "put me through" vs "put through")
-        const answerWords = (answer || '').split(/\s+/).filter(Boolean);
-        if (answerWords.length > 1) {
-          // build a regex like: \bword1\b(?:\s+\w+){0,3}?\s+\bword2\b ...
-          const parts = answerWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-          const fuzzy = parts.map(p => `\\b${p}\\b`).join('(?:[\\s\\w]{0,20}?)');
-          try {
-            const re = new RegExp(fuzzy, 'i');
-            const m2 = re.exec(fullSentence);
-            if (m2) {
-              const idx2 = m2.index;
-              prefix = fullSentence.slice(0, idx2).replace(/\s+/g, ' ');
-              suffix = fullSentence.slice(idx2 + m2[0].length).replace(/\s+/g, ' ');
-            } else {
-              suffix = fullSentence;
-            }
-          } catch (err) {
-            suffix = fullSentence;
-          }
-        } else {
-          // If exact match not found, leave full sentence as suffix
-          suffix = fullSentence;
-        }
-      }
-    } catch (err) {
-      suffix = fullSentence;
-    }
+    ({ prefix, suffix } = buildPrefixSuffix(fullSentence, answer));
   } else {
     suffix = fullSentence;
   }

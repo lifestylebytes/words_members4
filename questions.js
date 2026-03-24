@@ -164,7 +164,7 @@ const QUESTIONS = [
   {
     "answer": "So you’re saying…",
     "prefix": "",
-    "suffix": "So you’re saying we should prioritize quality over speed.",
+    "suffix": " we should prioritize quality over speed.",
     "meaning": "그러니까 ~라는 말씀이죠?",
     "translation": "그러니까 속도보다 품질을 우선하자는 말씀이죠.",
     "category": "유의어",
@@ -192,10 +192,10 @@ const QUESTIONS = [
     "addedDate": "2026-03-25"
   },
   {
-    "answer": "If it’s okay, I’d like to shift to",
-    "prefix": "",
+    "answer": "I’d like to shift to",
+    "prefix": "If it’s okay, ",
     "suffix": " next steps.",
-    "meaning": "괜찮으시면 ~로 넘어가고 싶어요",
+    "meaning": "~로 넘어가고 싶어요",
     "translation": "괜찮으시면 다음 단계로 넘어가고 싶어요.",
     "category": "유의어",
     "day": 3,
@@ -272,9 +272,9 @@ const QUESTIONS = [
     "addedDate": "2026-03-25"
   },
   {
-    "answer": "I’m not convinced.",
+    "answer": "I’m not convinced",
     "prefix": "",
-    "suffix": "I’m not convinced this will scale.",
+    "suffix": " this will scale.",
     "meaning": "확신이 안 들어요.",
     "translation": "이게 확장 가능할지 확신이 안 들어요.",
     "category": "유의어",
@@ -292,29 +292,29 @@ const QUESTIONS = [
     "addedDate": "2026-03-26"
   },
   {
-    "answer": "I have concerns about that.",
-    "prefix": "",
-    "suffix": "I have concerns about that for compliance reasons.",
-    "meaning": "그 부분이 우려돼요.",
+    "answer": "have concerns",
+    "prefix": "I ",
+    "suffix": " about that for compliance reasons.",
+    "meaning": "우려/걱정이 든다.",
     "translation": "규정 준수 측면에서 그 부분이 우려돼요.",
     "category": "유의어",
     "day": 4,
     "addedDate": "2026-03-26"
   },
   {
-    "answer": "I’m not sure that’s the best approach.",
-    "prefix": "",
-    "suffix": "I’m not sure that’s the best approach given our timeline.",
-    "meaning": "그게 최선의 방법인지는 모르겠어요.",
+    "answer": "best approach.",
+    "prefix": "I’m not sure that’s the ",
+    "suffix": " given our timeline.",
+    "meaning": "최선의 방법(접근)",
     "translation": "우리 일정상 그게 최선인지는 확신이 없어요.",
     "category": "기본",
     "day": 4,
     "addedDate": "2026-03-26"
   },
   {
-    "answer": "That makes sense, but…",
+    "answer": "That makes sense, but",
     "prefix": "",
-    "suffix": "That makes sense, but it could increase scope.",
+    "suffix": " it could increase scope.",
     "meaning": "그건 말이 되는데…",
     "translation": "말은 되지만, 범위가 늘어날 수 있어요.",
     "category": "유의어",
@@ -322,10 +322,10 @@ const QUESTIONS = [
     "addedDate": "2026-03-26"
   },
   {
-    "answer": "I see where you’re coming from, but…",
+    "answer": "I see where you’re coming from",
     "prefix": "",
-    "suffix": "I see where you’re coming from, but I’m worried about the risk.",
-    "meaning": "무슨 말인지 이해해요. 다만…",
+    "suffix": ", but I’m worried about the risk.",
+    "meaning": "무슨 말인지 이해해요.",
     "translation": "무슨 말인지 이해해요. 다만 그 리스크가 걱정돼요.",
     "category": "기본",
     "day": 4,
@@ -342,9 +342,9 @@ const QUESTIONS = [
     "addedDate": "2026-03-26"
   },
   {
-    "answer": "I get your point, but…",
+    "answer": "I get your point, but",
     "prefix": "",
-    "suffix": "I get your point, but we may not have enough time.",
+    "suffix": " we may not have enough time.",
     "meaning": "포인트는 이해했는데…",
     "translation": "이해는 했는데, 시간이 부족할 수 있어요.",
     "category": "유의어",
@@ -483,8 +483,8 @@ const QUESTIONS = [
   },
   {
     "answer": "current status is…",
-    "prefix": "",
-    "suffix": "The current status is that we’re waiting on approval.",
+    "prefix": "The ",
+    "suffix": " that we’re waiting on approval.",
     "meaning": "현재 상태는…",
     "translation": "현재는 승인 대기 중이에요.",
     "category": "유의어",
@@ -492,9 +492,9 @@ const QUESTIONS = [
     "addedDate": "2026-03-30"
   },
   {
-    "answer": "Here’s where we are.",
+    "answer": "Here’s where we are",
     "prefix": "",
-    "suffix": "Here’s where we are: the draft is done, and QA starts tomorrow.",
+    "suffix": ": the draft is done, and QA starts tomorrow.",
     "meaning": "지금 진행 상황은 이렇습니다",
     "translation": "지금 상황은 이렇습니다: 초안은 끝났고 QA는 내일 시작해요.",
     "category": "기본",
@@ -724,7 +724,7 @@ const QUESTIONS = [
   {
     "answer": "I’ve included…",
     "prefix": "",
-    "suffix": "I’ve included the notes in the doc.",
+    "suffix": " the notes in the doc.",
     "meaning": "포함했습니다",
     "translation": "문서에 노트를 포함해뒀어요.",
     "category": "유의어",
@@ -764,7 +764,7 @@ const QUESTIONS = [
   {
     "answer": "attached is…",
     "prefix": "",
-    "suffix": "Attached is the latest deck.",
+    "suffix": " the latest deck.",
     "meaning": "첨부는 …입니다",
     "translation": "최신 자료를 첨부했습니다.",
     "category": "유의어",
@@ -942,9 +942,9 @@ const QUESTIONS = [
     "addedDate": "2026-04-02"
   },
   {
-    "answer": "DRI (Directly Responsible Individual)",
-    "prefix": "",
-    "suffix": "Who’s the DRI for this launch?",
+    "answer": "DRI",
+    "prefix": "Who’s the ",
+    "suffix": " for this launch?",
     "meaning": "최종 책임자/오너(직접 책임지는 사람)",
     "translation": "이 런치의 최종 책임자는 누구인가요?",
     "category": "기본",
@@ -992,9 +992,9 @@ const QUESTIONS = [
     "addedDate": "2026-04-02"
   },
   {
-    "answer": "knowledge transfer (KT)",
-    "prefix": "",
-    "suffix": "Let’s do a quick knowledge transfer so you have full context.",
+    "answer": "knowledge transfer",
+    "prefix": "Let’s do a quick ",
+    "suffix": " so you have full context.",
     "meaning": "(업무) 지식/맥락을 인수인계하다(지식 이전)",
     "translation": "맥락까지 다 잡히도록 짧게 KT(지식 인수인계)하고 갈게요.",
     "category": "기본",
@@ -1023,8 +1023,8 @@ const QUESTIONS = [
   },
   {
     "answer": "hand off",
-    "prefix": "I’ll ",
-    "suffix": " to you once the doc is finalized.",
+    "prefix": "",
+    "suffix": "I’ll hand this off to you once the doc is finalized.",
     "meaning": "인계하다/넘기다",
     "translation": "문서가 확정되면 이걸 당신에게 인계할게요.",
     "category": "기본",
@@ -1053,8 +1053,8 @@ const QUESTIONS = [
   },
   {
     "answer": "pass along",
-    "prefix": "I’ll ",
-    "suffix": " to the team.",
+    "prefix": "",
+    "suffix": "I’ll pass this along to the team.",
     "meaning": "전달하다",
     "translation": "팀에 전달할게요.",
     "category": "유의어",
@@ -1094,7 +1094,7 @@ const QUESTIONS = [
   {
     "answer": "May I add something?",
     "prefix": "",
-    "suffix": "May I add something about the risk?",
+    "suffix": " about the risk?",
     "meaning": "한마디 추가해도 될까요?",
     "translation": "리스크 관련해서 한마디 추가해도 될까요?",
     "category": "유의어",
@@ -1304,7 +1304,7 @@ const QUESTIONS = [
   {
     "answer": "we can either…",
     "prefix": "",
-    "suffix": "We can either ship now or push it to next week.",
+    "suffix": " ship now or push it to next week.",
     "meaning": "~하거나 ~하거나",
     "translation": "지금 배포하거나 다음 주로 미룰 수 있어요.",
     "category": "유의어",
@@ -1334,7 +1334,7 @@ const QUESTIONS = [
   {
     "answer": "one option is…",
     "prefix": "",
-    "suffix": "One option is to start with a smaller scope.",
+    "suffix": " to start with a smaller scope.",
     "meaning": "한 가지 옵션은…",
     "translation": "한 가지 옵션은 더 작은 범위로 시작하는 거예요.",
     "category": "유의어",
@@ -1434,7 +1434,7 @@ const QUESTIONS = [
   {
     "answer": "Let’s lock this in.",
     "prefix": "",
-    "suffix": "Let’s lock this in by EOD so we can move forward.",
+    "suffix": " by EOD so we can move forward.",
     "meaning": "이건 확정하자",
     "translation": "진행할 수 있게 오늘 중으로 확정하죠.",
     "category": "기본",
@@ -1443,8 +1443,8 @@ const QUESTIONS = [
   },
   {
     "answer": "push down the list",
-    "prefix": "Let’s ",
-    "suffix": ".",
+    "prefix": "",
+    "suffix": "Let’s push it down the list.",
     "meaning": "리스트 아래로 미루다",
     "translation": "리스트 아래로 미루죠.",
     "category": "유의어",
@@ -1513,8 +1513,8 @@ const QUESTIONS = [
   },
   {
     "answer": "lower priority",
-    "prefix": "We should ",
-    "suffix": " for this.",
+    "prefix": "",
+    "suffix": "We should lower the priority for this.",
     "meaning": "우선순위를 낮추다",
     "translation": "이건 우선순위를 낮춰야 해요.",
     "category": "유의어",
