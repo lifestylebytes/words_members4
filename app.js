@@ -132,6 +132,11 @@ const premiumCodeInput = document.getElementById("premiumCodeInput");
 const premiumHint = document.getElementById("premiumHint");
 const premiumSubmitBtn = document.getElementById("premiumSubmitBtn");
 const premiumCancelBtn = document.getElementById("premiumCancelBtn");
+const voiceBtn = document.getElementById("voiceBtn");
+const voiceLabel = voiceBtn ? voiceBtn.querySelector(".voice-label") : null;
+const debugStatusEl = document.getElementById("debugStatus");
+const fallbackNote = document.getElementById("fallbackNote");
+const fallbackInput = document.getElementById("fallbackInput");
 
 // 상태값
 let questions = [];
@@ -149,6 +154,11 @@ let typedRaw = "";   // 사용자가 지금까지 친 문자열
 let finished = false;
 let currentAnswer = "";
 let wrongWords = [];
+let recognition = null;
+let isListening = false;
+let micStream = null;
+let listenTimer = null;
+const debugLog = [];
 
 // -------------------- 유틸 & 세션 문제 선택 --------------------
 
@@ -632,6 +642,13 @@ function resetAll(limit = 10) {
   typedRaw = "";
   currentAnswer = "";
   wrongWords = [];
+  recognition?.stop?.();
+  stopMicStream();
+  clearListenTimer();
+
+  fallbackNote?.classList.add("hidden");
+  fallbackInput?.classList.add("hidden");
+  if (fallbackInput) fallbackInput.value = "";
 
   statusEl.textContent = "";
   statusEl.className = "status";
@@ -751,6 +768,201 @@ function applyChar(rawCh) {
   }
 }
 
+function replaceTypedInput(rawText = "") {
+  typedRaw = "";
+  finished = false;
+  renderSlots();
+
+  for (const ch of String(rawText)) {
+    applyChar(ch);
+  }
+}
+
+function updateVoiceUI(listening) {
+  if (!voiceBtn) return;
+  isListening = listening;
+  voiceBtn.classList.toggle("listening", listening);
+  voiceBtn.setAttribute("aria-pressed", listening ? "true" : "false");
+  if (voiceLabel) {
+    voiceLabel.textContent = listening ? "듣는 중..." : "Voice";
+  }
+  logDebug(`listening=${listening}`);
+}
+
+function showVoiceNote(text, isError = false) {
+  if (!statusEl || !text) return;
+  statusEl.textContent = text;
+  statusEl.className = isError ? "status wrong" : "status";
+}
+
+function applySpeechText(text) {
+  const cleaned = normaliseBase(text);
+  if (!cleaned) return;
+  replaceTypedInput(cleaned);
+}
+
+function setupSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+
+  const rec = new SpeechRecognition();
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.continuous = false;
+  rec.maxAlternatives = 1;
+
+  rec.addEventListener("start", () => updateVoiceUI(true));
+  rec.addEventListener("end", () => {
+    updateVoiceUI(false);
+    stopMicStream();
+    clearListenTimer();
+  });
+  rec.addEventListener("error", (event) => {
+    updateVoiceUI(false);
+    stopMicStream();
+    const detail = event?.error ? ` (${event.error})` : "";
+    logDebug(`error=${event?.error || "unknown"}`);
+    showVoiceNote(`음성 인식을 시작할 수 없어요.${detail}`, true);
+    clearListenTimer();
+    showFallbackInput();
+  });
+  rec.addEventListener("result", (event) => {
+    const transcript = Array.from(event.results)
+      .map(result => result[0].transcript)
+      .join(" ");
+    applySpeechText(transcript);
+    logDebug(`result=${transcript}`);
+    clearListenTimer();
+  });
+
+  return rec;
+}
+
+function stopMicStream() {
+  if (!micStream) return;
+  micStream.getTracks().forEach(track => track.stop());
+  micStream = null;
+}
+
+async function ensureMicAccess() {
+  if (micStream) return true;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showVoiceNote("마이크 접근을 지원하지 않는 브라우저예요.", true);
+    logDebug("getUserMedia=unsupported");
+    showFallbackInput();
+    return false;
+  }
+
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    logDebug("getUserMedia=ok");
+    return true;
+  } catch (e) {
+    showVoiceNote("마이크 권한이 필요해요.", true);
+    logDebug(`getUserMedia=error:${e?.name || "unknown"}`);
+    showFallbackInput();
+    return false;
+  }
+}
+
+async function toggleVoiceInput() {
+  if (!voiceBtn) return;
+
+  if (!recognition) {
+    recognition = setupSpeechRecognition();
+    if (!recognition) {
+      showVoiceNote("이 브라우저는 음성 인식을 지원하지 않아요. 아래 입력칸의 키보드 마이크를 사용해 주세요.", true);
+      logDebug("SpeechRecognition=unsupported");
+      showFallbackInput();
+      return;
+    }
+  }
+
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+
+  if (typedRaw) {
+    replaceTypedInput("");
+    showVoiceNote("다시 말해 주세요.");
+  }
+
+  const ok = await ensureMicAccess();
+  if (!ok) return;
+
+  try {
+    recognition.start();
+    logDebug("start=ok");
+    startListenTimer();
+  } catch (e) {
+    updateVoiceUI(false);
+    stopMicStream();
+    showVoiceNote("음성 인식 시작에 실패했어요.", true);
+    logDebug(`start=error:${e?.message || "unknown"}`);
+    clearListenTimer();
+    showFallbackInput();
+  }
+}
+
+function startListenTimer() {
+  clearListenTimer();
+  listenTimer = setTimeout(() => {
+    showVoiceNote("인식 결과가 없어요. 아래 입력칸에서 키보드 음성 입력을 사용해 주세요.", true);
+    logDebug("timeout=no-result");
+    showFallbackInput();
+    try {
+      recognition?.stop();
+    } catch (e) {}
+  }, 6000);
+}
+
+function clearListenTimer() {
+  if (!listenTimer) return;
+  clearTimeout(listenTimer);
+  listenTimer = null;
+}
+
+function logDebug(message) {
+  debugLog.push(message);
+  if (debugLog.length > 6) {
+    debugLog.shift();
+  }
+  renderDebug();
+}
+
+function renderDebug() {
+  if (!debugStatusEl) return;
+  const ua = navigator.userAgent || "unknown";
+  const srSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  const gumSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  const lines = [
+    `UA: ${ua}`,
+    `secureContext=${window.isSecureContext}`,
+    `SpeechRecognition=${srSupported}`,
+    `getUserMedia=${gumSupported}`,
+    `questions=${QUESTIONS_SOURCE.length}`
+  ];
+  debugLog.forEach((msg) => lines.push(`[debug] ${msg}`));
+  debugStatusEl.textContent = lines.join("\n");
+}
+
+async function checkMicPermission() {
+  if (!navigator.permissions || !navigator.permissions.query) return;
+  try {
+    const result = await navigator.permissions.query({ name: "microphone" });
+    logDebug(`permission=${result.state}`);
+  } catch (e) {}
+}
+
+function showFallbackInput() {
+  fallbackNote?.classList.remove("hidden");
+  if (fallbackInput) {
+    fallbackInput.classList.remove("hidden");
+    fallbackInput.focus();
+  }
+}
+
 // -------------------- 키보드 입력 --------------------
 
 function handleKey(e) {
@@ -832,6 +1044,19 @@ if (mobileInput) {
   });
 }
 
+if (fallbackInput) {
+  fallbackInput.addEventListener("input", (e) => {
+    const value = e.target.value;
+    if (!value) return;
+
+    for (const ch of value) {
+      applyChar(ch);
+    }
+
+    e.target.value = "";
+  });
+}
+
 // -------------------- 이벤트 연결 & 시작 --------------------
 
 document.addEventListener("keydown", handleKey);
@@ -846,6 +1071,22 @@ if (batch20Btn) {
 
 if (sentenceCardEl) {
   sentenceCardEl.addEventListener("click", focusMobileInput);
+}
+
+if (voiceBtn) {
+  voiceBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    document.activeElement?.blur?.();
+    mobileInput?.blur?.();
+    toggleVoiceInput();
+  });
+
+  voiceBtn.addEventListener("touchstart", (e) => {
+    e.stopPropagation();
+    document.activeElement?.blur?.();
+    mobileInput?.blur?.();
+  });
 }
 
 // 팝업 다시하기 버튼 (단 한 번만 등록)
@@ -891,7 +1132,26 @@ if (premiumModal) {
   });
 }
 
+window.addEventListener("pagehide", () => {
+  if (recognition && isListening) {
+    recognition.stop();
+  }
+  stopMicStream();
+});
+
 // 시작
+renderDebug();
+checkMicPermission();
 updatePremiumButtonUI();
 resetAll()
 updateFinalLinkVisibility();
+
+window.quizApp = {
+  replaceTypedInput,
+  checkAnswer,
+  revealAndNext,
+  resetAll,
+  focusMobileInput,
+  getCurrentAnswer: () => currentAnswer,
+  isFinished: () => finished
+};

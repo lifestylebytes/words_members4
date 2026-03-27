@@ -34,7 +34,7 @@ const QUESTIONS = [
   {
     "answer": "kick off",
     "prefix": "We’ll ",
-    "suffix": " the project with a short kickoff meeting.",
+    "suffix": " the project with a short meeting.",
     "meaning": "(프로젝트/미팅을) 시작하다",
     "translation": "짧은 킥오프 미팅으로 프로젝트를 시작할게요.",
     "category": "기본",
