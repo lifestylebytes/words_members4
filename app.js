@@ -356,6 +356,8 @@ function cleanMeaning(text) {
 }
 
 function setSentence(q) {
+  card.classList.remove("correct-state");
+
   if (!q) return;
 
   wrongCount = 0;
@@ -501,11 +503,13 @@ function checkAnswer() {
     correctCount++;
     statusEl.textContent = "굳, 맞았습니다. 다음 문장으로 넘어갈게요.";
     statusEl.className = "status correct";
+    card.classList.add("correct-state");
     card.classList.add("flash");
     updateScore();
     finished = true;
 
     setTimeout(() => {
+      card.classList.remove("correct-state");
       card.classList.remove("flash");
       nextQuestion();
     }, 450);
@@ -645,7 +649,6 @@ function resetAll(limit = 10) {
   }
 
   setSentence(questions[0]);
-  focusMobileInput();   // ✅ 모바일 인풋 포커스
 }
 
 function updateFinalLinkVisibility() {
@@ -827,11 +830,6 @@ if (mobileInput) {
 
     ensureQuestionVisible();
   });
-}
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", ensureQuestionVisible);
-  window.visualViewport.addEventListener("scroll", ensureQuestionVisible);
 }
 
 // -------------------- 이벤트 연결 & 시작 --------------------
