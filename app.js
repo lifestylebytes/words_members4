@@ -844,8 +844,9 @@ if (batch20Btn) {
   batch20Btn.addEventListener("click", () => resetAll(20));
 }
 
-card.addEventListener("click", focusMobileInput);
-card.addEventListener("touchstart", focusMobileInput);
+if (sentenceCardEl) {
+  sentenceCardEl.addEventListener("click", focusMobileInput);
+}
 
 // 팝업 다시하기 버튼 (단 한 번만 등록)
 document.getElementById("retryBtn").addEventListener("click", () => {
