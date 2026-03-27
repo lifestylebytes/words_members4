@@ -646,6 +646,8 @@ function resetAll(limit = 10) {
   stopMicStream();
   clearListenTimer();
 
+  fallbackNote?.classList.remove("visible");
+  fallbackInput?.classList.remove("visible");
   fallbackNote?.classList.add("hidden");
   fallbackInput?.classList.add("hidden");
   if (fallbackInput) fallbackInput.value = "";
@@ -956,6 +958,8 @@ async function checkMicPermission() {
 }
 
 function showFallbackInput() {
+  fallbackNote?.classList.add("visible");
+  fallbackInput?.classList.add("visible");
   fallbackNote?.classList.remove("hidden");
   if (fallbackInput) {
     fallbackInput.classList.remove("hidden");
