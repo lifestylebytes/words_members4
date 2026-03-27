@@ -600,12 +600,11 @@ function ensureQuestionVisible() {
 
   if (rect.top < topThreshold || rect.bottom > bottomThreshold) {
     sentenceCardEl.scrollIntoView({
-      block: "start",
-      behavior: "smooth"
+      block: "start"
     });
 
     window.setTimeout(() => {
-      window.scrollBy({ top: -12, behavior: "smooth" });
+      window.scrollBy(0, -12);
     }, 120);
   }
 }
@@ -1043,8 +1042,6 @@ if (mobileInput) {
 
     // 인풋 값은 매번 비워서 계속 새 글자만 받도록
     e.target.value = "";
-
-    ensureQuestionVisible();
   });
 }
 
