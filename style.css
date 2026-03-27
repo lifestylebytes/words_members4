@@ -44,7 +44,7 @@ body {
 .right-actions {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   margin-top: 22px;
 }
@@ -122,21 +122,21 @@ body {
 /* Reset pill 버튼 */
 
 .mode-pill {
-  padding: 7px 16px;
+  padding: 9px 14px;
   border-radius: 999px;
-  background: #f4f2ff;
-  box-shadow:
-    6px 6px 13px rgba(176, 169, 216, 0.44),
-    -3px -3px 8px rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.86);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: #757c93;
-  border: none;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6d738c;
+  border: 1px solid rgba(216, 211, 242, 0.95);
   cursor: pointer;
   transition:
     background-color 0.16s ease,
+    border-color 0.16s ease,
     box-shadow 0.16s ease,
     color 0.16s ease,
     transform 0.16s ease;
@@ -147,30 +147,22 @@ body {
 }
 
 .mode-pill:hover {
-  background: #f7f5ff;
-  box-shadow:
-    7px 7px 15px rgba(176, 169, 216, 0.47),
-    -3px -3px 8px rgba(255, 255, 255, 0.95);
+  background: #fff;
+  border-color: rgba(196, 189, 236, 0.95);
+  box-shadow: 0 8px 18px rgba(171, 168, 204, 0.14);
 }
 
 .mode-pill:active {
   transform: translateY(1px);
-  box-shadow:
-    inset 3px 3px 6px rgba(184, 178, 219, 0.9),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 2px 4px rgba(184, 178, 219, 0.22);
 }
 
 /* indicate selected state for batch-size pills */
 .mode-pill.selected {
-  background: #ece8ff;
-  color: #4a4f66;
-  box-shadow:
-    inset 2px 2px 4px rgba(186, 178, 226, 0.85),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.95);
-}
-
-.mode-pill.selected .mode-dot {
-  background: #7b5df0;
+  background: #f0ebff;
+  border-color: #cfc3ff;
+  color: #5444a7;
+  box-shadow: none;
 }
 
 .batch-selector {
@@ -182,35 +174,30 @@ body {
 .batch-options {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(242, 239, 255, 0.92);
+  border: 1px solid rgba(216, 211, 242, 0.95);
 }
 
 .batch-option {
-  min-width: 80px;
-  position: relative;
-  justify-content: center;
-  padding-left: 26px;
-  padding-right: 14px;
+  min-width: 72px;
+  padding: 8px 12px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .batch-option:hover {
-  background: #f7f5ff;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .batch-option.selected {
-  color: #515770;
-}
-
-.batch-option .mode-dot {
-  position: absolute;
-  left: 12px;
-  background: #b8bccb;
-  box-shadow: 0 0 0 4px rgba(184, 188, 203, 0.22);
-}
-
-.batch-option.selected .mode-dot {
-  background: #7b5df0;
-  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.32);
+  background: #fff;
+  color: #453b82;
+  border-color: rgba(216, 211, 242, 0.95);
+  box-shadow: 0 4px 12px rgba(171, 168, 204, 0.12);
 }
 
 .batch-option span {
@@ -220,11 +207,7 @@ body {
 }
 
 .mode-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: #a78bfa;
-  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.32);
+  display: none;
 }
 
 .beta-link {
@@ -245,28 +228,19 @@ body {
 }
 
 .premium-pill {
-  background: linear-gradient(135deg, #fff6d7 0%, #ffe7a3 100%);
-  color: #6f5613;
-  box-shadow:
-    6px 6px 14px rgba(206, 182, 101, 0.28),
-    -3px -3px 8px rgba(255, 250, 230, 0.95);
-}
-
-.premium-pill .mode-dot {
-  background: #d7a72a;
-  box-shadow: 0 0 0 4px rgba(215, 167, 42, 0.18);
+  background: rgba(255, 247, 219, 0.9);
+  border-color: rgba(240, 201, 88, 0.9);
+  color: #8a6612;
 }
 
 .premium-pill.active {
-  background: linear-gradient(135deg, #ffd86b 0%, #ffbf47 100%);
-  color: #4d3a08;
+  background: linear-gradient(135deg, #ffe390 0%, #ffc95c 100%);
+  border-color: #efba48;
+  color: #5a4006;
 }
 
 .availability-pill,
 .release-summary {
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(216, 211, 242, 0.9);
   color: #68708c;
 }
 
@@ -278,10 +252,13 @@ body {
 
 .release-summary {
   align-self: flex-start;
-  padding: 10px 16px;
-  font-size: 13px;
+  padding: 0;
+  margin-top: 2px;
+  font-size: 14px;
   line-height: 1.4;
   font-weight: 600;
+  background: transparent;
+  border: 0;
 }
 
 /* ---------- 문장 카드 영역 ---------- */
@@ -552,29 +529,68 @@ body {
 /* ---------- 반응형 ---------- */
 
 @media (max-width: 720px) {
+  body {
+    display: block;
+    min-height: 100dvh;
+    padding: max(12px, env(safe-area-inset-top)) 0 calc(28px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
   .top-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    display: contents;
+  }
+
+  .left-header {
+    order: 1;
+    gap: 8px;
   }
 
   .right-actions {
+    order: 6;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 0;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .mode-pill,
+  .beta-link {
+    font-size: 11px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .batch-options {
+    gap: 4px;
+  }
+
+  .batch-option {
+    min-width: auto;
+    padding: 8px 12px;
   }
 
   .release-summary {
     width: 100%;
-    text-align: center;
+    text-align: left;
+    font-size: 13px;
+    color: #7b8097;
+    order: 7;
   }
 
   .card {
+    width: min(100%, calc(100vw - 20px));
+    margin: 0 auto;
     padding: 22px 18px 18px;
     border-radius: 26px;
   }
 
   .sentence-card {
+    margin-top: 0;
     padding: 26px 18px 22px;
+    order: 2;
   }
    .char-slot {
     font-size: 16px;      /* 글자 조금 작게 */
@@ -590,11 +606,24 @@ body {
 
   .bottom-row {
     margin-top: 10px;
+    order: 3;
   }
 
   .btn {
     width: 100%;
     text-align: center;
+  }
+
+  .typing-hint {
+    order: 4;
+  }
+
+  .status {
+    order: 5;
+  }
+
+  .meta {
+    order: 8;
   }
 
   .availability-pill {

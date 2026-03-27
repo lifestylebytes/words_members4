@@ -283,8 +283,8 @@ const QUESTIONS = [
   },
   {
     "answer": "voice a concern",
-    "prefix": "",
-    "suffix": "She voiced a concern about the schedule.",
+    "prefix": "She decided to ",
+    "suffix": " about the schedule.",
     "meaning": "우려를 말로 꺼내다",
     "translation": "그녀가 일정에 대해 우려를 표현했어요.",
     "category": "유의어",

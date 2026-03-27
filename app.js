@@ -124,6 +124,7 @@ const batchSelector = document.getElementById("batchSelector");
 const availabilityPill = document.getElementById("availabilityPill");
 const releaseSummaryEl = document.getElementById("releaseSummary");
 const mobileInput = document.getElementById("mobileInput");
+const sentenceCardEl = document.querySelector(".sentence-card");
 const finalLinkWrap = document.getElementById("finalLinkWrap");
 const premiumBtn = document.getElementById("premiumBtn");
 const premiumModal = document.getElementById("premiumModal");
@@ -569,6 +570,30 @@ function focusMobileInput() {
   try {
     mobileInput.focus();
   } catch (e) {}
+  setTimeout(() => {
+    ensureQuestionVisible();
+  }, 120);
+}
+
+function ensureQuestionVisible() {
+  if (!sentenceCardEl) return;
+  if (!window.matchMedia("(max-width: 720px)").matches) return;
+
+  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+  const rect = sentenceCardEl.getBoundingClientRect();
+  const topThreshold = 14;
+  const bottomThreshold = viewportHeight - 170;
+
+  if (rect.top < topThreshold || rect.bottom > bottomThreshold) {
+    sentenceCardEl.scrollIntoView({
+      block: "start",
+      behavior: "smooth"
+    });
+
+    window.setTimeout(() => {
+      window.scrollBy({ top: -12, behavior: "smooth" });
+    }, 120);
+  }
 }
 
 // -------------------- Reset --------------------
@@ -782,6 +807,12 @@ function handleKey(e) {
 
 // 📱 안드로이드 등에서 keydown 대신 input 이벤트만 오는 경우 대응
 if (mobileInput) {
+  mobileInput.addEventListener("focus", () => {
+    setTimeout(() => {
+      ensureQuestionVisible();
+    }, 120);
+  });
+
   mobileInput.addEventListener("input", (e) => {
     const value = e.target.value;
     if (!value) return;
@@ -793,7 +824,14 @@ if (mobileInput) {
 
     // 인풋 값은 매번 비워서 계속 새 글자만 받도록
     e.target.value = "";
+
+    ensureQuestionVisible();
   });
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", ensureQuestionVisible);
+  window.visualViewport.addEventListener("scroll", ensureQuestionVisible);
 }
 
 // -------------------- 이벤트 연결 & 시작 --------------------
