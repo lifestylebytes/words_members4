@@ -512,11 +512,38 @@ body {
   box-shadow: 0 0 0 4px rgba(255, 111, 138, 0.18);
 }
 
+.debug-panel {
+  margin-top: 10px;
+  border-top: 1px dashed rgba(196, 191, 225, 0.7);
+  padding-top: 8px;
+}
+
+.debug-panel summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 11px;
+  color: #9aa0b5;
+  user-select: none;
+}
+
+.debug-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.debug-panel summary::before {
+  content: "+";
+  display: inline-block;
+  width: 12px;
+  margin-right: 4px;
+}
+
+.debug-panel[open] summary::before {
+  content: "-";
+}
+
 .debug-status {
   min-height: 18px;
   margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed rgba(196, 191, 225, 0.7);
   font-size: 11px;
   color: #9aa0b5;
   word-break: break-word;
