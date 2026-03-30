@@ -14,7 +14,41 @@
     return `${y}-${m}-${day}`;
   }
 
+  function parseLocalDate(dateStr) {
+    return new Date(`${dateStr}T00:00:00`);
+  }
+
+  function getWeekdayIndex(date) {
+    return date.getDay();
+  }
+
+  function isBusinessDay(date) {
+    const weekdayIndex = getWeekdayIndex(date);
+    return weekdayIndex >= 1 && weekdayIndex <= 5;
+  }
+
+  function getReleasedDayLimit(releaseDateStr, startDateStr = "2026-03-23", baseDayNumber = 1) {
+    if (!releaseDateStr) return baseDayNumber - 1;
+
+    const start = parseLocalDate(startDateStr);
+    const end = parseLocalDate(releaseDateStr);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) {
+      return baseDayNumber - 1;
+    }
+
+    const cursor = new Date(start);
+    let businessDays = 0;
+
+    while (cursor <= end) {
+      if (isBusinessDay(cursor)) businessDays += 1;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return businessDays > 0 ? baseDayNumber + businessDays - 1 : baseDayNumber - 1;
+  }
+
   const todayStr = localDateString();
+  const releasedDayLimit = getReleasedDayLimit(todayStr);
 
   // Only include items that either don't have `addedDate` or whose `addedDate` is
   // less than or equal to today's local date. This makes new words appear at
@@ -24,7 +58,14 @@
     // Respect the visible flag; explicit `false` means hide completely.
     if (item.visible === false) return false;
     if (!item.addedDate) return true;
-    return item.addedDate <= todayStr;
+    if (item.addedDate > todayStr) return false;
+
+    const dayNumber = Number(item.day);
+    if (Number.isFinite(dayNumber)) {
+      return dayNumber <= releasedDayLimit;
+    }
+
+    return true;
   });
 
   function cleanMeaning(text) {

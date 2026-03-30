@@ -29,6 +29,44 @@ function getReleaseDateKST(releaseHour = 0) {
   return getKSTDateParts(base).date;
 }
 
+function parseKSTDate(dateStr) {
+  return new Date(`${dateStr}T00:00:00+09:00`);
+}
+
+function getKSTWeekdayIndex(date) {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Seoul",
+    weekday: "short"
+  }).format(date);
+
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(weekday);
+}
+
+function isBusinessDayKST(date) {
+  const weekdayIndex = getKSTWeekdayIndex(date);
+  return weekdayIndex >= 1 && weekdayIndex <= 5;
+}
+
+function getReleasedDayLimit(releaseDateStr, startDateStr = QUIZ_START_DATE, baseDayNumber = 1) {
+  if (!releaseDateStr) return baseDayNumber - 1;
+
+  const start = parseKSTDate(startDateStr);
+  const end = parseKSTDate(releaseDateStr);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) {
+    return baseDayNumber - 1;
+  }
+
+  const cursor = new Date(start);
+  let businessDays = 0;
+
+  while (cursor <= end) {
+    if (isBusinessDayKST(cursor)) businessDays += 1;
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return businessDays > 0 ? baseDayNumber + businessDays - 1 : baseDayNumber - 1;
+}
+
 const QUIZ_START_DATE = "2026-03-23";
 const RELEASE_HOUR_KST = 0;
 const PREMIUM_CODE = "7777";
@@ -68,7 +106,19 @@ function getPreviewReleaseDate() {
 
 function getAvailableQuestions() {
   const releaseDate = getPreviewReleaseDate() || getReleaseDateKST(RELEASE_HOUR_KST);
-  return QUESTIONS_SOURCE.filter(q => q.addedDate && q.addedDate <= releaseDate);
+  const releasedDayLimit = getReleasedDayLimit(releaseDate);
+
+  return QUESTIONS_SOURCE.filter(q => {
+    if (!q || !q.addedDate) return false;
+    if (q.addedDate > releaseDate) return false;
+
+    const dayNumber = Number(q.day);
+    if (Number.isFinite(dayNumber)) {
+      return dayNumber <= releasedDayLimit;
+    }
+
+    return true;
+  });
 }
 
 function getPreviewDayLabel() {
