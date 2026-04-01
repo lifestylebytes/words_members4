@@ -300,8 +300,10 @@ function normaliseWithSpace(str) {
 
 // 공백 제거 (띄어쓰기 없이 쳐도 정답 인정용)
 function normaliseWithoutSpace(str) {
-  // remove spaces, hyphens and apostrophes so "I've" == "ive"
-  return normaliseBase(str).replace(/[\s\-']/g, "");
+  // Compare only the letters the user is actually expected to type.
+  // Fixed punctuation in the slot UI such as ";" in "TL;DR" should not
+  // block a correct answer like "tldr".
+  return normaliseBase(str).replace(/[^a-z]/g, "");
 }
 
 // -------------------- 패턴(언더바) 세팅 --------------------
